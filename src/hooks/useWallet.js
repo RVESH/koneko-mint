@@ -53,20 +53,22 @@
 //   };
 // };
 // src/hooks/useWallet.js
-import { useCallback } from "react";
+// useWallet.js
+import { useMemo } from "react";
 import { useWalletContext } from "../context/WalletContext";
 
 export const useWallet = () => {
   const ctx = useWalletContext();
 
-  return {
+  return useMemo(() => ({
     ...ctx,
-    // formatting helpers
-    formatAddress: useCallback((address) => {
+    formatAddress: (address) => {
       if (!address) return "";
-      return `${address.slice(0, 6)}…${address.slice(-4)}`;
-    }, []),
-
-    isOnOptimism: useCallback(() => ctx.chainId === "0xA", [ctx.chainId])
-  };
+      return `${address.slice(0,6)}...${address.slice(-4)}`;
+    },
+    isOnOptimism: () => ctx.chainId === "0xA",
+    getNetworkName: () => ctx.getNetworkName()
+  }), [ctx]);
 };
+
+

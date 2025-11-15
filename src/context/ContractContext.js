@@ -45,28 +45,23 @@ export const ContractProvider = ({ children }) => {
   // ---------------------------------------------
   // 🚀 SAFE initializeContracts()
   // ---------------------------------------------
-  const initializeContracts = async () => {
-    try {
-      setIsInitializing(true);
+const initializeContracts = async () => {
+  try {
+    setIsInitializing(true);
 
-      // 🔐 BLOCK if MetaMask is locked
-      const accounts = await window.ethereum.request({ method: "eth_accounts" });
-      if (!accounts || accounts.length === 0) {
-        throw new Error("MetaMask is locked. Please unlock your wallet.");
-      }
+    // Only init when wallet is connected
+    if (!account) return;
 
-      await contractService.initialize(window.ethereum);
+    await contractService.initialize(window.ethereum);
 
-      setContractsInitialized(true);
-      console.log("✅ Contracts initialized");
+    setContractsInitialized(true);
+  } catch (e) {
+    console.log("Contract init failed:", e);
+  } finally {
+    setIsInitializing(false);
+  }
+};
 
-    } catch (error) {
-      console.error("❌ Contract init failed:", error);
-      setContractsInitialized(false);
-    } finally {
-      setIsInitializing(false);
-    }
-  };
 
   // Load contract info
   const loadContractInfo = async () => {
