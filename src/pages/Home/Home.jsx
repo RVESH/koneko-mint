@@ -24,9 +24,6 @@ const Home = () => {
       .catch(console.error);
   }, []);
 
-  
-  
-
 
   const closePopup = () => setSelectedNFT(null);
 
