@@ -1,0 +1,59 @@
+@property --angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+@property --stretch {
+	syntax: '<number>';
+	initial-value: 0;
+	inherits: false;
+}
+@property --distance {
+	syntax: '<percentage>';
+	initial-value: 0%;
+	inherits: false;
+}
+
+@-webkit-keyframes rotate-angle {
+	from {--angle: 0deg;}
+	to {--angle: 360deg;}
+}
+@keyframes rotate-angle {
+	from {--angle: 0deg;}
+	to {--angle: 360deg;}
+}
+
+
+@-webkit-keyframes stretch-bg {
+	0%,100% {--stretch: 0;}
+	50% {--stretch: 1;}
+}
+@keyframes stretch-bg {
+	0%,100% {--stretch: 0;}
+	50% {--stretch: 1;}
+}
+
+@-webkit-keyframes move-forward {
+  from {--distance: 0;}
+	to {--distance: 100;}
+}
+@keyframes move-forward {
+	from {--distance: 0%;}
+	to {--distance: 100%;}
+}
+
+
+
+@mixin animation($animation) {
+  -webkit-animation: $animation;
+	-moz-animation: $animation;
+       -o-animation: $animation;
+          animation: $animation;
+}
+
+@mixin transition($transitions...) {
+  -webkit-transition: $transitions;
+     -moz-transition: $transitions;
+  		 -o-transition: $transitions;
+  	 			transition: $transitions;
+}

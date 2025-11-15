@@ -1,0 +1,24 @@
+.social-links {
+  display: flex;
+  gap: 1.08rem;
+  a {
+    color: #21527d;
+    font-size: 1.27rem;
+    background: #e7f0fb;
+    border-radius: 50%;
+    padding: 7px;
+    transition: background 0.2s, color 0.2s;
+    text-align: center;
+    box-shadow: 0 0 7px #bcd1f77a;
+
+    &:hover {
+      background: #21527d;
+      color: #fff;
+    }
+
+    i {
+      display: block;
+      line-height: 1em;
+    }
+  }
+}

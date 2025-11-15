@@ -1,0 +1,93 @@
+
+@mixin gradient-striped($c1:#ffffa2,$c2: #adf8fc,$s:50px, $deg: 135deg) {
+	background: $c2;
+  background-image: -webkit-linear-gradient($deg, $c1 25%, transparent 25%, transparent 50%, $c1 50%, $c1 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient($deg, $c1 25%, transparent 25%, transparent 50%, $c1 50%, $c1 75%, transparent 75%, transparent);
+  background-image: linear-gradient($deg, $c1 25%, transparent 25%, transparent 50%, $c1 50%, $c1 75%, transparent 75%, transparent);
+	background-size: $s $s;
+}
+
+@mixin gradient-striped2($c1:#ffffa2,$c2: #adf8fc,$s:50px, $deg: 135deg) {
+	@include gradient-striped($c1,$c2,$s,$deg);
+	@keyframes pbs {from{ background-position: 0 0;}to{background-position: $s 0;}}
+	@-webkit-keyframes pbs {from{ background-position: $s 0;}to{background-position: 0 0;}}
+	@include animation(pbs 2s linear infinite);
+}
+
+
+
+@mixin rotate-color($c1:#ffffa2,$c2: #adf8fc){
+	@supports (--angle:90deg){
+		background-image: -webkit-gradient(linear, left top, left bottom, from(var(--angle)), color-stop($c1), to($c2));
+		background-image: -webkit-linear-gradient(var(--angle), $c1 50%, $c2) ;
+		background-image: -o-linear-gradient(var(--angle), $c1,$c2) ;
+		background-image: linear-gradient(var(--angle), $c1, $c2);
+		@include animation(rotate-angle 6s linear infinite);
+	}
+}
+@mixin stretch-color($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	@supports (--stretch:0.5){
+		background-image: -o-linear-gradient($deg, $c1 0%,$c2 calc(var(--stretch) * 100%), $c1 100%);
+		background-image: linear-gradient($deg, $c1 0%,$c2 calc(var(--stretch) * 100%), $c1 100%);
+		@include animation(stretch-bg 4s ease-in-out infinite);
+	}
+}
+
+@mixin traverse-color($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+  @supports (--distance:50%){
+		background-image: -webkit-gradient(linear,left top, right top,from($c1),color-stop($c2),color-stop($c2),to($c1));
+		background-image: -o-linear-gradient(left,$c1 var(--distance),$c2 calc(var(--distance) + 5%),$c2 calc(var(--distance) + 25%),$c1 calc(var(--distance) + 30%));
+		background-image: linear-gradient($deg,$c1 var(--distance),$c2 calc(var(--distance) + 5%),$c2 calc(var(--distance) + 25%),$c1 calc(var(--distance) + 30%));
+		background-image: linear-gradient($deg,$c1 var(--distance),$c2 calc(var(--distance) + 5%),$c2 calc(var(--distance) + 25%),$c1 calc(var(--distance) + 30%));
+		@include animation(move-forward 3s linear infinite normal);
+	}
+}
+
+
+@mixin gradient-bg($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	background: $c1;
+	background-image: -webkit-gradient(linear, left top, left bottom, from($deg), color-stop(50%, $c1), to($c2)) ;
+	background-image: -o-linear-gradient($deg, $c1 50%, $c2) ;
+	background-image: linear-gradient($deg,$c1, $c2);
+}
+
+@mixin gradient-bg2($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	@include gradient-bg($c1,$c2);
+	@include rotate-color($c1,$c2);
+}
+
+@mixin gradient-bg3($c1:#555,$c2: #888){
+	background: $c1;
+	background-image: linear-gradient(135deg,$c1, $c2);
+	@include traverse-color($c1,$c2,90deg)
+}
+@mixin gradient-bg4($c1:#222227,$c2: #323239){
+	background: $c1;
+	background-image: linear-gradient(135deg, $c1,$c2) ;
+	@include stretch-color($c1,$c2,135deg)
+}
+
+@mixin gradient-text($c1:#ffffa2,$c2:#adf8fc,$deg:135deg){
+
+  color: $c1;
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text !important;
+	background-clip: text !important;
+
+	background: $c1;
+	background-image: linear-gradient($deg,$c1, $c2);
+
+	@include user-select-none;
+}
+@mixin gradient-text2($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	@include gradient-text($c1,$c2);
+	@include rotate-color($c1,$c2);
+}
+@mixin gradient-text3($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	@include gradient-text($c1,$c2);
+	@include traverse-color($c1,$c2,135deg);
+}
+@mixin gradient-text4($c1:#ffffa2,$c2: #adf8fc,$deg:135deg){
+	@include gradient-text($c1,$c2);
+	@include stretch-color($c1,$c2,135deg);
+}

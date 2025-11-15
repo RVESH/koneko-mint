@@ -1,0 +1,185 @@
+.mint-page-container {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  padding: 1rem;
+  background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: #1a202c;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 80px auto;
+  // Gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px 24px 0 0;
+  }
+
+  .mint-header {
+    margin-bottom: 2rem;
+
+    .page-title {
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      .icon {
+        font-size: 2rem;
+      }
+    }
+
+    .page-subtitle {
+      color: #64748b;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .mint-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .lock-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    background: #f8faff;
+    border-radius: 20px;
+    border: 2px dashed #cbd5e1;
+
+    .lock-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.7;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    .wallet-required-msg {
+      color: #6b7280;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+  }
+
+  // Loading and error states
+  .loading-container, .not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #374151;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #6b7280;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+
+  .error-msg {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #dc2626;
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .mint-page-container {
+    margin: 0.5rem;
+    padding: 2rem 1.5rem;
+
+    .mint-header .page-title {
+      font-size: 2rem;
+    }
+
+    .lock-screen {
+      padding: 2rem 1rem;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .mint-page-container {
+    padding: 5px 5px;
+    margin-top: 80px;
+    .mint-header .page-title {
+      font-size: 1.75rem;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+}

@@ -1,0 +1,126 @@
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+
+  button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(70, 130, 180, 0.3);
+    transition: background 0.2s ease, transform 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #357ABD, #2a5298);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(70, 130, 180, 0.4);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      cursor: default;
+      box-shadow: 0 4px 10px rgba(30, 60, 114, 0.6);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, #a3a3a3, #7d7d7d);
+      box-shadow: none;
+      transform: none;
+    }
+  }
+
+  .ellipsis {
+    color: #888;
+    font-size: 1.2rem;
+    padding: 0 10px;
+  }
+
+  input.goto-input {
+    width: 50px;
+    padding: 0.35rem 0.6rem;
+    border-radius: 5px;
+    border: 1px solid #357ABD;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #1e3c72;
+      box-shadow: 0 0 4px #2a5298;
+      outline: none;
+    }
+  }
+
+  button.goto-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(70, 130, 180, 0.3);
+    transition: background 0.2s ease, transform 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #357ABD, #2a5298);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(70, 130, 180, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, #a3a3a3, #7d7d7d);
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 0.4rem;
+
+    button {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.85rem;
+    }
+    .ellipsis {
+      font-size: 1rem;
+      padding: 0 0.3rem;
+    }
+    input.goto-input {
+      width: 40px;
+      font-size: 0.85rem;
+    }
+    button.goto-btn {
+      padding: 0.35rem 0.8rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.3rem;
+    button, button.goto-btn {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .ellipsis {
+      display: none; // hide ellipsis on very small screens
+    }
+    input.goto-input {
+      display: none; // hide goto input on very small screens
+    }
+  }
+}

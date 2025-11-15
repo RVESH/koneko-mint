@@ -1,0 +1,27 @@
+// mintForm.scss
+.mint-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+
+  .mint-price {
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #2a4f8d;
+  }
+
+  .error-msg {
+    margin-top: 1rem;
+    background-color: #ff4d4f;
+    padding: 0.9rem 1.4rem;
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(255, 77, 79, 0.7);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+}

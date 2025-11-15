@@ -1,0 +1,191 @@
+@import 'mixin/mixin';
+
+// :root {
+//   --color-bg: #0d1117;
+//   --color-card: #161b22;
+//   --color-input: #1f2937;
+//   --color-border: #30363d;
+//   --color-text: #f0f6fc;
+//   --color-muted: #8b949e;
+//   --color-primary: #2f81f7;
+//   --color-primary-hover: #1f6feb;
+//   --color-error: #f85149;
+//   --color-success: #3fb950;
+// }
+
+:root {
+  --color-bg: #0d1117;
+  --color-card: #161b22;
+  --color-input: #1e293b;
+  --color-border: #2d333b;
+  --color-text: #e6edf3;
+  --color-muted: #8b949e;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-secondary: #ef4444;           // soft red (tailwind red-500)
+  --color-secondary-hover: #dc2626;     // darker red (tailwind red-600)
+  --color-error: #ef4444;
+  --color-success: #22c55e;
+}
+
+.main__wrapper{
+  @include flex-row();
+  min-height: 100vh;
+
+  .sign__wrapper{
+    @include display-block(100%,0,24px);
+    max-width: 400px;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+
+    .sign__wrapper__title{
+      @include display-block();
+      font: 600 24px/30px 'Inter', sans-serif;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    &.sign__wrapper__mid{
+      max-width: 600px;
+      .sign__wrapper__title{
+        margin-bottom: 30px;
+      }
+    }
+  }
+}
+
+.sign__form{
+  @include flex-column;
+  gap: 24px;
+}
+
+.sign__group{
+  @include flex-column;
+  gap: 8px;
+}
+.sign__lable{
+  @include flex-row;
+  @include justify-start;
+  font: 400 14px/16px 'Inter', sans-serif;
+  color: var(--color-muted);
+}
+
+.sign__input{
+  @include display-block;
+  background-color: var(--color-input);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font: 400 16px/18px 'Inter', sans-serif;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.sign__input__password{
+  @include display-block;
+  input{
+    padding-right: 55px;
+  }
+  .sign__input__password__toggle{
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font: 400 14px/16px 'Inter', sans-serif;
+    cursor: pointer;
+  }
+}
+.sign__textarea{
+  @extend .sign__input;
+  resize: none;
+}
+
+.sign__btn{
+  @include flex-row;
+  background-color: var(--color-primary);
+  color: white;
+  font: 400 16px/18px 'Inter', sans-serif;
+  border-radius: 8px;
+  padding: 12px;
+
+  &:hover {
+    background-color: var(--color-primary-hover);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); // subtle blue glow
+  }
+  &:disabled {
+    background-color: rgba(47, 129, 247, 0.5);
+    cursor: not-allowed;
+  }
+
+  &.secondary {
+    background: var(--color-secondary);
+    &:hover {
+      background: var(--color-secondary-hover);
+    }
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5); // subtle red glow
+    }
+    &:disabled {
+      background-color: rgba(239, 68, 68, 0.5);
+    }
+  }
+}
+
+.sign__btn__group{
+  @include flex-row;
+  gap: 16px;
+}
+
+.sign__message{
+  @include flex-row;
+  font: 400 14px/16px 'Inter', sans-serif;
+  color: #fff;
+}
+
+.sign__message__error {
+  @extend .sign__message;
+  color: var(--color-error);
+}
+
+.sign__message__success {
+  @extend .sign__message;
+  color: var(--color-success);
+}
+
+.sign__footer{
+  @include flex-row;
+
+  font: 400 14px/16px 'Inter', sans-serif;
+  color: var(--color-muted);
+  a {
+    display: inline-block;
+    position: relative;
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-left: 0.3rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

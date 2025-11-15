@@ -1,0 +1,57 @@
+/* ProfilePage.scss */
+.profile-page {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fafbfc;
+  font-family: 'Inter', sans-serif;
+  padding: 2rem 1rem 3rem;
+  margin-top: 73px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 40px rgba(28,60,108,0.08);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+  margin-bottom: 2rem;
+  min-height: 280px;
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    border: 3px solid #ececec;
+    background: #f0f0f0;
+    object-fit: cover;
+  }
+
+  .profile-wallet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+
+    .wallet-address {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2c3e50;
+      background: #f2f7fb;
+      padding: 0.4em 1em;
+      border-radius: 8px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .profile-copy {
+      padding: 0.5em 1em;
+      font-size: 1rem;
+    }
+  }
+}

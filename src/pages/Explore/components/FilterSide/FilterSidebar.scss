@@ -1,0 +1,163 @@
+$dark-bg: #1f2937;
+$darker-bg: #ddd;
+$accent-color: #3b49df;
+$text-primary: #1f2937;
+$text-secondary: #a3a3a3;
+$border-color: #333333;
+$hover-bg: #2a2a2a;
+
+.filter-sidebar {
+  width: 270px;
+  background: #ffffff;            // white panel
+  border-radius: 16px;            // same rounding as your cards
+  padding: 10px 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e0e7ff;      // subtle blue border to match card outlines
+  color: #1f2937;
+  margin-top: 15px;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: $text-primary;
+    letter-spacing: -0.02em;
+  }
+
+  .filter-category {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    details {
+      cursor: pointer;
+
+      summary {
+        padding: 1rem 0;
+        font-weight: 600;
+        font-size: 1rem;
+        color: $text-primary;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        outline: none;
+        transition: all 0.2s ease;
+        list-style: none;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        &:hover {
+          color: $accent-color;
+        }
+
+        &::after {
+          content: "▼";
+          font-size: 0.8rem;
+          color: $text-secondary;
+          transition: transform 0.3s ease;
+          transform-origin: center;
+        }
+      }
+
+      &[open] summary::after {
+        transform: rotate(-180deg);
+      }
+
+      .filter-options {
+        padding: 0 0 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .filter-option {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.95rem;
+          color: $text-secondary;
+          cursor: pointer;
+          transition: color 0.2s ease;
+          position: relative;
+
+          &:hover {
+            color: $text-primary;
+          }
+
+          input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid $border-color;
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:checked {
+              background: $accent-color;
+              border-color: $accent-color;
+            }
+
+            &:checked::after {
+              content: "✓";
+              position: absolute;
+              left: 2px;
+              top: -2px;
+              color: white;
+              font-size: 14px;
+              font-weight: bold;
+            }
+          }
+
+          .checkmark {
+            display: none; // Custom checkmark if needed
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 400px) {
+  .filter-sidebar {
+    width: 250px;
+    padding: 15px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-category {
+      details {
+        summary {
+          padding: 1px 1px;
+          font-size: 1rem;
+        }
+
+        .filter-options {
+          padding: 0 0 8px 0;
+          gap: 0.6rem;
+
+          .filter-option {
+            font-size: 0.9rem;
+            gap: 0.6rem;
+
+            input[type="checkbox"] {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

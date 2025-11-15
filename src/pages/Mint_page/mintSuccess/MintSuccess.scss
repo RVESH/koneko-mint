@@ -1,0 +1,75 @@
+/* MintSuccess.scss */
+.mint-success-container, .mint-page-container {
+  max-width: 480px;
+  margin: 10px ;
+  padding: 2rem 1.5rem;
+  background: #f7faff;
+  border-radius: 20px;
+  box-shadow: 0 9px 28px rgba(33, 76, 141, 0.12);
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: red;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.success-message {
+  font-size: 1.2rem;
+  color: #2463ec;
+  margin-bottom: 2rem;
+}
+
+.minted-nft-preview {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(33, 76, 141, 0.15);
+  margin-bottom: 2rem;
+
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: #174978;
+    margin: 0.5rem 0;
+  }
+
+  p {
+    color: #2463ec;
+    font-weight: 600;
+  }
+}
+
+.btn-close {
+  background-color: #2f67f6;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 36px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  user-select: none;
+  outline: none;
+
+  &:hover {
+    background-color: #1c4ad6;
+  }
+}
+
+.already-minted-msg {
+  font-size: 1.2rem;
+  color: #ff6b6b;
+  text-align: center;
+  padding: 2rem;
+}

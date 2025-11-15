@@ -1,0 +1,114 @@
+/* SearchBox.scss */
+.searchbox {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+
+  .icon-search {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1a202c;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+    }
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      color: #64748b;
+    }
+  }
+}
+/* Ultra-small screens (up to 150px) */
+
+@media (max-width: 150px) {
+  .searchbox {
+    max-width: none;      // remove any cap
+    width: 10px !important;  // force full parent width
+    margin: 0 0.2rem;        /* remove auto gutters */
+
+    .search-input {
+      padding: 0.3rem 1rem 0.3rem 1.5rem; // shrink padding
+      font-size: 0.7rem;
+      border-radius: 6px;
+    }
+
+    .clear-btn {
+        right: 4px;
+        font-size: 0.7rem;
+      }
+  }
+
+}
+/* Medium screens (up to tablets) */
+@media (max-width: 600px) {
+  .searchbox {
+    max-width: 120px;
+    right: 9px;
+
+    .search-input {
+      padding: 0.6rem 2rem 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .clear-btn {
+      left: 130px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+
+
+/* Large screens (desktops and above) */
+@media (min-width: 1200px) {
+  .searchbox {
+    max-width: 600px;
+
+    .icon-search {
+      left: 16px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .search-input {
+      padding: 1rem 3rem 1rem 3rem;
+      font-size: 1.1rem;
+      border-radius: 16px;
+    }
+
+    .clear-btn {
+      right: 16px;
+      font-size: 1.1rem;
+    }
+  }
+}

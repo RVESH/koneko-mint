@@ -1,0 +1,512 @@
+/* 1. Define keyframes at top level */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+ // src/pages/RandomMint/RandomMint.scss
+.random-mint {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem 0;
+margin-top: 60px;
+  .mint-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  // HEADER - HORIZONTAL
+  .mint-header {
+    text-align: center;
+
+    .mint-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      .title-icon {
+        font-size: 2.5rem;
+      }
+    }
+
+    .mint-subtitle {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+  }
+
+  // WALLET STATUS - HORIZONTAL
+  .wallet-status {
+    text-align: center;
+
+    .status-connected {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+  }
+
+  // STATS BAR - HORIZONTAL ROW
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+
+    .stat-item {
+      text-align: center;
+
+      .stat-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a202c;
+      }
+    }
+  }
+
+  // PREVIEW SECTION
+  .preview-section {
+    display: flex;
+    justify-content: center;
+
+    .preview-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      transition: all 0.3s ease;
+
+      &.minting {
+        transform: scale(1.02);
+      }
+
+      .preview-image {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1rem;
+        border-radius: 16px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .mystery-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          span {
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+          }
+        }
+      }
+
+      .minting-animation {
+        .spinner {
+          width: 60px;
+          height: 60px;
+          border: 4px solid #e2e8f0;
+          border-top: 4px solid #667eea;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 1rem;
+        }
+
+        h3 {
+          color: #1a202c;
+          margin-bottom: 0.5rem;
+        }
+
+        p {
+          color: #64748b;
+        }
+      }
+    }
+  }
+
+  // RESULTS - COMPACT HORIZONTAL GRID
+  .mint-results {
+    .results-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+
+      .success-badge {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+    }
+
+    // COMPACT GRID - FITS 10 NFTs IN ONE SCREEN
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+
+      .result-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+        border: 2px solid #e2e8f0;
+
+        &:hover {
+          transform: translateY(-2px);
+          border-color: #667eea;
+        }
+
+        .result-image {
+          aspect-ratio: 1;
+
+          img {
+            width: 200px;
+            height: 100px;
+          }
+        }
+
+        .result-info {
+          padding: 0.75rem;
+          text-align: center;
+
+          h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .result-id {
+            color: #64748b;
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+
+    // POST MINT ACTIONS - HORIZONTAL
+.error-banner {
+  background: #fff2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+    .post-mint-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.view-profile-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+        }
+
+        .mint-more-btn {
+           animation: pulse 1.5s ease-in-out infinite;
+           transition: transform 0.2s ease, box-shadow 0.2s ease;
+           /* ensure your base styles are here, too */
+           background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+           color: white;
+           padding: 0.75rem 1.5rem;
+           border: none;
+           border-radius: 12px;
+           font-weight: 600;
+           cursor: pointer;
+
+           &:hover:not(:disabled) {
+             transform: scale(1.1);
+             box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+           }
+
+           &:disabled {
+             opacity: 0.6;
+             cursor: not-allowed;
+             animation: none;
+           }
+         }
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+  // Add to RandomMint.scss
+  .success-section {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+
+    .success-card {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+
+      .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 1s ease-in-out;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #10b981;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .success-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+
+        button {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &.profile-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+
+            &:hover {
+              transform: translateY(-2px);
+            }
+          }
+
+          &.mint-more-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+
+            &:hover:not(:disabled) {
+              transform: translateY(-2px);
+            }
+
+            &:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .success-section .success-card {
+      margin: 1rem;
+      padding: 2rem 1.5rem;
+
+      .success-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  // BOTTOM ACTIONS
+  .bottom-actions {
+    text-align: center;
+
+    .explore-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+// MOBILE RESPONSIVE
+@media (max-width: 768px) {
+  .random-mint {
+    .mint-container {
+      padding: 0 0.75rem;
+    }
+
+    .mint-header .mint-title {
+      font-size: 2rem;
+    }
+
+    .stats-bar {
+      gap: 1rem;
+      padding: 1rem;
+
+      .stat-item .stat-value {
+        font-size: 1.2rem;
+      }
+    }
+
+    .preview-section .preview-card {
+      padding: 1.5rem;
+
+      .preview-image {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    .mint-results {
+      .results-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.75rem;
+        padding: 0.75rem;
+      }
+
+      .post-mint-actions {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .random-mint {
+    .stats-bar {
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+
+        .stat-label, .stat-value {
+          display: inline;
+        }
+      }
+    }
+
+    .mint-results .results-grid {
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      max-height: 50vh;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+// mintButton.scss
+.btn-mint {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(45deg, #21527d, #2f67f6);
+  border: none;
+  border-radius: 36px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 10px rgba(47, 103, 246, 0.7);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(45deg, #1b3c68, #1c4ad6);
+    box-shadow: 0 0 20px rgba(27, 60, 104, 0.9);
+  }
+
+  &:disabled {
+    background: #8fa9d5;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #d1d9f1;
+  }
+}
