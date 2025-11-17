@@ -58,6 +58,7 @@ const WalletButton = () => {
       {/* ✅ Popup ALWAYS available */}
       <WalletInstallPopup />
     </>
+    
   );
 };
    
