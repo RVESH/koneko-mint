@@ -10,6 +10,7 @@ export const useWalletContext = () => {
   return ctx;
 };
 
+/* ------- Config / helpers ------- */
 const NETWORK_NAMES = {
   "0x1": "Ethereum",
   "0xA": "Optimism",
@@ -19,198 +20,208 @@ const NETWORK_NAMES = {
   "0x38": "BSC"
 };
 
-const SIGNATURE_KEY = "koneko_signed_session"; // session storage key
+const SIGNATURE_KEY = "koneko_signature_session"; // optional (we won't auto-login with it)
 
+/* ------- Provider ------- */
 export const WalletProvider = ({ children }) => {
-
-
-  const [provider, setProvider] = useState(null); // ethers provider (BrowserProvider)
+  // core state
+  const [provider, setProvider] = useState(null); // ethers BrowserProvider
   const [signer, setSigner] = useState(null);
-  const [showInstallPopup, setShowInstallPopup] = useState(false);
 
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [balance, setBalance] = useState("0");
-  const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isLocked, setIsLocked] = useState(true); // assume locked until we confirm
+
+  const [isConnected, setIsConnected] = useState(false); // connected & signature verified
+  const [isConnecting, setIsConnecting] = useState(false); // currently connecting
+  const [isLocked, setIsLocked] = useState(true); // whether extension currently locked
   const [error, setError] = useState(null);
 
-  // Helper: human friendly network name
+  // UI control for install popup (shown when no provider detected)
+  const [showInstallPopup, setShowInstallPopup] = useState(false);
+
+  const hasEthereum = () => typeof window !== "undefined" && !!window.ethereum;
   const getNetworkName = (cid = chainId) => NETWORK_NAMES[cid] || "Unknown Network";
 
-  // Helper: check MetaMask is available
-  const hasEthereum = () => typeof window !== "undefined" && !!window.ethereum;
-
-  // Create ephemeral message (no backend) — include timestamp + random nonce
+  /* === create a login message for signature ===
+     Every connect triggers a signature; message includes nonce & timestamp.
+  */
   const createLoginMessage = (address) => {
     const nonce = Math.floor(Math.random() * 1e9);
     const ts = new Date().toISOString();
-    return `Koneko — Sign to confirm ownership\n\nAddress: ${address}\nNonce: ${nonce}\nTimestamp: ${ts}`;
+    return `Koneko — Sign to login\n\nAddress: ${address}\nNonce: ${nonce}\nTimestamp: ${ts}`;
   };
 
-  // Connect wallet + signature flow
-const connectWallet = async () => {
-  setError(null);
-
-  // ⚠️ FIRST CHECK: MetaMask installed or not
-  if (typeof window === "undefined" || !window.ethereum) {
-    console.warn("MetaMask not detected → Show popup");
-    setShowInstallPopup(true);
-    return;
-  }
-
-  try {
-    setIsConnecting(true);
-
-    // 👍 open MetaMask popup
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    });
-
-    if (!accounts || accounts.length === 0) {
-      throw new Error("Unlock MetaMask to continue");
-    }
-
-    const user = ethers.getAddress(accounts[0]);
-    setAccount(user);
-    setIsLocked(false);
-
-    const browserProvider = new ethers.BrowserProvider(window.ethereum);
-    setProvider(browserProvider);
-
-    const signer = await browserProvider.getSigner();
-    setSigner(signer);
-
-    const chain = await window.ethereum.request({ method: "eth_chainId" });
-    setChainId(chain);
-
-    const bal = await browserProvider.getBalance(user);
-    setBalance(ethers.formatEther(bal));
-
-    setIsConnected(true);
-
-  } catch (err) {
-    console.error("Connect Wallet Error:", err);
-
-    if (err.code === 4001) setError("User rejected");
-    else setError(err.message);
-
-    setAccount(null);
-    setIsConnected(false);
-
-  } finally {
-    setIsConnecting(false);
-  }
-};
-
-
-  // Disconnect: clear local app state & sessionStorage. NOTE: cannot force MetaMask to revoke permissions programmatically.
-  const disconnectWallet = async () => {
-    // Clear session data
-    sessionStorage.removeItem(SIGNATURE_KEY);
-    setAccount(null);
-    setIsConnected(false);
-    setSigner(null);
-    setProvider(null);
-    setChainId(null);
-    setBalance("0");
-    setIsLocked(true);
+  /* === connectWallet: always forces wallet popup + signature
+     1) if window.ethereum missing -> show install popup
+     2) call eth_requestAccounts -> will open extension popup
+     3) get signer, request signMessage -> require signature to mark connected
+  */
+  const connectWallet = async () => {
     setError(null);
 
-    // Try politely hinting provider to remove permissions (best-effort; not all wallets support programmatic revoke).
+    if (!hasEthereum()) {
+      setShowInstallPopup(true);
+      return;
+    }
+
     try {
-      if (hasEthereum() && window.ethereum.request) {
-        // Many wallets do not implement revoke; this is best-effort. If unsupported it will throw and we ignore.
-        await window.ethereum.request({
-          method: "wallet_requestPermissions",
-          params: [{ eth_accounts: {} }]
-        });
+      setIsConnecting(true);
+
+      // force MetaMask/extension popup for account selection/unlock
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No accounts returned. Please unlock MetaMask and try again.");
       }
-    } catch (e) {
-      // ignore - user can disconnect from MetaMask UI if they want permanent revoke
-      console.debug("Permission revoke not supported programmatically.", e?.message);
+
+      const addr = ethers.getAddress(accounts[0]);
+      // create provider & signer
+      const browserProvider = new ethers.BrowserProvider(window.ethereum);
+      const signerInstance = await browserProvider.getSigner();
+
+      // Save basic info before signature
+      setProvider(browserProvider);
+      setSigner(signerInstance);
+      setAccount(addr);
+      setIsLocked(false);
+
+      // optional: get chain & balance
+      const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(() => null);
+      setChainId(cid || null);
+
+      const bal = await browserProvider.getBalance(addr).catch(() => null);
+      if (bal != null) setBalance(ethers.formatEther(bal));
+
+      // Now require explicit signature to confirm login
+      const message = createLoginMessage(addr);
+
+      // Note: signMessage will prompt the wallet; user must confirm
+      const signature = await signerInstance.signMessage(message);
+      if (!signature) throw new Error("Signature rejected");
+
+      // successful connect+signature
+      setIsConnected(true);
+      // Optionally store session proof (we won't auto-login with it)
+      try {
+        sessionStorage.setItem(SIGNATURE_KEY, JSON.stringify({ address: addr, signature, ts: Date.now() }));
+      } catch (e) {
+        /* ignore storage errors */
+      }
+
+      setError(null);
+      return { address: addr, signature };
+    } catch (err) {
+      console.error("connectWallet error:", err);
+      // cleanup partial state
+      setAccount(null);
+      setIsConnected(false);
+      setProvider(null);
+      setSigner(null);
+      setChainId(null);
+      setBalance("0");
+      setIsLocked(true);
+
+      // if extension present but eth_requestAccounts rejected (4001) map to human message
+      if (err?.code === 4001) setError("User rejected the request");
+      else setError(err.message || String(err));
+
+      throw err;
+    } finally {
+      setIsConnecting(false);
     }
   };
 
-  // Refresh balance & chain
+  /* === disconnectWallet ===
+     clear app state. we do not force wallet revoke (wallet UI can do it).
+  */
+  const disconnectWallet = async () => {
+    try {
+      // Clear session storage
+      try { sessionStorage.removeItem(SIGNATURE_KEY); } catch (_) {}
+      setAccount(null);
+      setIsConnected(false);
+      setProvider(null);
+      setSigner(null);
+      setChainId(null);
+      setBalance("0");
+      setIsLocked(true);
+      setError(null);
+    } catch (e) {
+      console.warn("disconnect error", e);
+    }
+  };
+
+  /* === refreshWalletInfo: update balance & chainId === */
   const refreshWalletInfo = async () => {
     try {
       if (!provider || !account) return;
       const bal = await provider.getBalance(account);
       setBalance(ethers.formatEther(bal));
       if (window.ethereum) {
-        const cid = await window.ethereum.request({ method: "eth_chainId" });
-        setChainId(cid);
+        const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(() => null);
+        setChainId(cid || chainId);
       }
     } catch (e) {
       console.warn("refreshWalletInfo failed", e);
     }
   };
 
-  // Attach listeners for account / chain changes
-  const attachListeners = () => {
-    if (!hasEthereum()) return;
-    // guard to avoid duplicating handlers
+  /* === Event handlers for provider events === */
+  const handleAccountsChanged = async (accounts) => {
     try {
-      window.ethereum.removeListener?.("accountsChanged", handleAccountsChanged);
-      window.ethereum.removeListener?.("chainChanged", handleChainChanged);
-    } catch (_) {}
-
-    window.ethereum.on("accountsChanged", handleAccountsChanged);
-    window.ethereum.on("chainChanged", handleChainChanged);
-  };
-
-  const handleAccountsChanged = (accounts) => {
-    if (!accounts || accounts.length === 0) {
-      // MetaMask locked or user disconnected from extension
-      console.log("Accounts empty -> locked or disconnected");
-      // we treat this as disconnected: clear app state
-      setAccount(null);
-      setIsConnected(false);
-      setSigner(null);
-      setProvider(null);
-      setIsLocked(true);
-      sessionStorage.removeItem(SIGNATURE_KEY);
-    } else {
-      const normalized = ethers.getAddress(accounts[0]);
-      setAccount(normalized);
+      if (!accounts || accounts.length === 0) {
+        // user locked or removed permission in extension UI
+        await disconnectWallet();
+        return;
+      }
+      const addr = ethers.getAddress(accounts[0]);
+      setAccount(addr);
       setIsLocked(false);
-      // update signer/provider
+      // update signer/provider & balance
       if (window.ethereum) {
         const pb = new ethers.BrowserProvider(window.ethereum);
         setProvider(pb);
-        pb.getSigner().then(s => setSigner(s)).catch(()=>{});
-        pb.getBalance(normalized).then(b => setBalance(ethers.formatEther(b))).catch(()=>{});
+        pb.getSigner().then(s => setSigner(s)).catch(() => {});
+        pb.getBalance(addr).then(b => setBalance(ethers.formatEther(b))).catch(()=>{});
       }
+    } catch (e) {
+      console.warn("handleAccountsChanged error", e);
     }
   };
 
   const handleChainChanged = (cid) => {
-    console.log("chainChanged ->", cid);
     setChainId(cid);
-    // refresh balances with new provider
     setTimeout(() => refreshWalletInfo(), 200);
   };
 
-  // On mount: set locked = true by default and add handlers to detect if user manually changes in MetaMask panel
+  /* === On mount: detect provider, attach listeners, but DO NOT auto-login ===
+     - we read eth_accounts only to detect whether extension is unlocked so UI can show "locked" state
+     - we DO NOT treat unlocked as connected; user must explicitly click Connect -> signature
+  */
   useEffect(() => {
     if (!hasEthereum()) {
       setIsLocked(true);
       return;
     }
 
-    // We will not auto-connect. But we can read eth_accounts to know if extension has active accounts (but we won't auto-login).
+    // attach listeners (remove first to avoid duplicates)
+    try {
+      window.ethereum.removeListener?.("accountsChanged", handleAccountsChanged);
+      window.ethereum.removeListener?.("chainChanged", handleChainChanged);
+    } catch (_) {}
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+    window.ethereum.on("chainChanged", handleChainChanged);
+
     (async () => {
       try {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" });
-        if (accounts && accounts.length > 0) {
-          // there is an unlocked session in MetaMask, but we DO NOT auto-connect.
+        const accs = await window.ethereum.request({ method: "eth_accounts" });
+        if (accs && accs.length > 0) {
           setIsLocked(false);
-          // set account but not 'isConnected' or signer until user actively connects & signs
-          setAccount(ethers.getAddress(accounts[0]));
-          const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(()=>null);
-          setChainId(cid);
+          setAccount(ethers.getAddress(accs[0]));
+          // set chainId if available
+          const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(() => null);
+          setChainId(cid || null);
         } else {
           setIsLocked(true);
         }
@@ -219,19 +230,16 @@ const connectWallet = async () => {
       }
     })();
 
-    // attach listeners so UI updates on manual changes
-    try { attachListeners(); } catch (e){}
-
-    // cleanup
     return () => {
       try {
         window.ethereum?.removeListener?.("accountsChanged", handleAccountsChanged);
         window.ethereum?.removeListener?.("chainChanged", handleChainChanged);
       } catch (_) {}
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Expose context values
+  /* value exposed to app */
   const value = {
     // state
     account,
@@ -249,10 +257,10 @@ const connectWallet = async () => {
     disconnectWallet,
     refreshWalletInfo,
     getNetworkName,
-          // ⭐ NEW (IMPORTANT)
-  showInstallPopup,
-  setShowInstallPopup,
 
+    // install popup control
+    showInstallPopup,
+    setShowInstallPopup
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

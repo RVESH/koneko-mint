@@ -122,7 +122,6 @@ const WalletInstallPopup = () => {
             </div>
           ))}
         </div>
-
         <div className="popup-footer">
           <div className="security-note">
             <div className="security-icon">🔒</div>
