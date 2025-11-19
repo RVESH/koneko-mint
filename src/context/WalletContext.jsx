@@ -57,80 +57,105 @@ export const WalletProvider = ({ children }) => {
      2) call eth_requestAccounts -> will open extension popup
      3) get signer, request signMessage -> require signature to mark connected
   */
-  const connectWallet = async () => {
-    setError(null);
+const connectWallet = async () => {
+  setError(null);
 
-    if (!hasEthereum()) {
-      setShowInstallPopup(true);
-      return;
+  // No provider -> show install popup
+  if (!hasEthereum()) {
+    console.log("[wallet] no ethereum provider -> show install popup");
+    setShowInstallPopup(true);
+    return false;
+  }
+
+  setIsConnecting(true);
+
+  try {
+    console.log("[wallet] requesting accounts (eth_requestAccounts)...");
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      .catch(err => {
+        // user closed the popup or provider refused
+        console.warn("[wallet] eth_requestAccounts aborted:", err && err.message);
+        return null;
+      });
+
+    if (!accounts || accounts.length === 0) {
+      console.log("[wallet] no accounts returned (user closed popup / locked).");
+      return false; // user canceled or wallet locked — behave silently like NFTGO
     }
 
-    try {
-      setIsConnecting(true);
+    const addr = ethers.getAddress(accounts[0]);
+    console.log("[wallet] account selected:", addr);
 
-      // force MetaMask/extension popup for account selection/unlock
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    // create provider + signer
+    const browserProvider = new ethers.BrowserProvider(window.ethereum);
+    const signerObj = await browserProvider.getSigner().catch(err => {
+      console.warn("[wallet] getSigner failed:", err && err.message);
+      return null;
+    });
 
-      if (!accounts || accounts.length === 0) {
-        throw new Error("No accounts returned. Please unlock MetaMask and try again.");
-      }
+    if (!signerObj) {
+      console.warn("[wallet] no signer -> aborting connect");
+      return false;
+    }
 
-      const addr = ethers.getAddress(accounts[0]);
-      // create provider & signer
-      const browserProvider = new ethers.BrowserProvider(window.ethereum);
-      const signerInstance = await browserProvider.getSigner();
+    // store intermediate state (not fully connected until signature is accepted)
+    setProvider(browserProvider);
+    setSigner(signerObj);
+    setAccount(addr);
 
-      // Save basic info before signature
-      setProvider(browserProvider);
-      setSigner(signerInstance);
-      setAccount(addr);
-      setIsLocked(false);
+    // chain & balance
+    const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(() => null);
+    setChainId(cid || null);
+    const bal = await browserProvider.getBalance(addr).catch(() => null);
+    if (bal != null) setBalance(ethers.formatEther(bal));
 
-      // optional: get chain & balance
-      const cid = await window.ethereum.request({ method: "eth_chainId" }).catch(() => null);
-      setChainId(cid || null);
+    // SIGNATURE FLOW
+    const message = createLoginMessage(addr);
+    console.log("[wallet] requesting signature...");
+    const signature = await signerObj.signMessage(message).catch(err => {
+      // user rejected signature or provider error
+      console.warn("[wallet] signature rejected/failed:", err && err.message);
+      return null;
+    });
 
-      const bal = await browserProvider.getBalance(addr).catch(() => null);
-      if (bal != null) setBalance(ethers.formatEther(bal));
-
-      // Now require explicit signature to confirm login
-      const message = createLoginMessage(addr);
-
-      // Note: signMessage will prompt the wallet; user must confirm
-      const signature = await signerInstance.signMessage(message);
-      if (!signature) throw new Error("Signature rejected");
-
-      // successful connect+signature
-      setIsConnected(true);
-      // Optionally store session proof (we won't auto-login with it)
-      try {
-        sessionStorage.setItem(SIGNATURE_KEY, JSON.stringify({ address: addr, signature, ts: Date.now() }));
-      } catch (e) {
-        /* ignore storage errors */
-      }
-
-      setError(null);
-      return { address: addr, signature };
-    } catch (err) {
-      console.error("connectWallet error:", err);
-      // cleanup partial state
+    if (!signature) {
+      // user rejected signature -> clean intermediate state and return false silently
+      console.log("[wallet] user rejected signature — clearing intermediate state");
       setAccount(null);
-      setIsConnected(false);
-      setProvider(null);
       setSigner(null);
+      setProvider(null);
       setChainId(null);
       setBalance("0");
-      setIsLocked(true);
-
-      // if extension present but eth_requestAccounts rejected (4001) map to human message
-      if (err?.code === 4001) setError("User rejected the request");
-      else setError(err.message || String(err));
-
-      throw err;
-    } finally {
-      setIsConnecting(false);
+      setIsConnected(false);
+      return false;
     }
-  };
+
+    // Success: store session proof (optional)
+    try {
+      sessionStorage.setItem(SIGNATURE_KEY, JSON.stringify({ address: addr, signature, ts: Date.now() }));
+    } catch (_) {}
+
+    setIsConnected(true);
+    console.log("[wallet] connected + signature accepted:", addr);
+    setError(null);
+    return true;
+
+  } catch (err) {
+    console.error("[wallet] connectWallet unexpected error:", err);
+    setError(err?.message || String(err));
+    // best-effort cleanup
+    setAccount(null);
+    setProvider(null);
+    setSigner(null);
+    setChainId(null);
+    setBalance("0");
+    setIsConnected(false);
+    return false;
+  } finally {
+    setIsConnecting(false);
+  }
+};
+
 
   /* === disconnectWallet ===
      clear app state. we do not force wallet revoke (wallet UI can do it).
