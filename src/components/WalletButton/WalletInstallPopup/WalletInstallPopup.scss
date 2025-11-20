@@ -1,204 +1,286 @@
+/* ===== Overlay (full page, blur background) ===== */
 .wallet-install-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(8, 10, 26, 0.55);
+  backdrop-filter: blur(10px);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 9999;
+  animation: overlay-fade 0.2s ease-out;
 }
 
+@keyframes overlay-fade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ===== Popup card ===== */
 .wallet-install-popup {
-  width: 90%;
-  max-width: 480px;
-  background: #1c1c1c;
-  border-radius: 14px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f1f1f1;
-  animation: popupFade 0.25s ease-out;
-}
+  width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
 
-@keyframes popupFade {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  background: radial-gradient(circle at top left, #fefcff, #f6f7ff) ;
+  background-clip: padding-box;
+  border-radius: 18px;
+  padding: 20px 22px 18px;
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.7);
 
-/* HEADER */
-.popup-header {
+  animation: pop 0.25s ease-out;
   position: relative;
-  text-align: center;
-  margin-bottom: 20px;
-
-  h2 {
-    font-size: 1.6rem;
-    margin-bottom: 4px;
-  }
-
-  p {
-    font-size: 0.9rem;
-    opacity: 0.7;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: #2b2b2b;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    color: #ddd;
-    cursor: pointer;
-  }
 }
 
-/* WALLET CARDS */
+/* Compact inner scroll area (without ugly scrollbar) */
+.wallet-install-popup-inner {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* if you wrap content in .wallet-install-popup-inner in JSX,
+   or simply apply scroll styles to .wallet-options like below */
+
+/* ===== Nice scroll behaviour (almost invisible) ===== */
 .wallet-options {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
-.wallet-option {
-  background: #242424;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 14px;
-  transition: all 0.2s ease;
+/* Hide / minimal scrollbar (Chrome, Edge, Safari) */
+.wallet-options::-webkit-scrollbar {
+  width: 4px;
+}
+.wallet-options::-webkit-scrollbar-track {
+  background: transparent;
+}
+.wallet-options::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 140, 0.35);
+  border-radius: 999px;
+}
+.wallet-options:hover::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 140, 0.6);
+}
 
-  &:hover {
-    border-color: #666;
-    background: #2b2b2b;
-  }
+/* Firefox */
+.wallet-options {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 120, 140, 0.5) transparent;
+}
+
+/* ===== Animations ===== */
+@keyframes pop {
+  0% { transform: translateY(10px) scale(0.95); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ===== Header ===== */
+.popup-header {
+  text-align: left;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.popup-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 32px 4px 0;
+}
+
+.popup-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b6b80;
+}
+
+.close-btn {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(230, 231, 243, 0.9);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.close-btn:hover {
+  background: rgba(210, 212, 235, 1);
+  transform: scale(1.03);
+}
+
+/* ===== Wallet option cards ===== */
+.wallet-option {
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(226, 228, 246, 0.9);
+  background: rgba(255, 255, 255, 0.9);
+  transition: 0.18s ease;
+  cursor: pointer;
+}
+
+.wallet-option:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .wallet-header {
   display: flex;
   align-items: center;
   gap: 12px;
-
-  .wallet-icon {
-    font-size: 2rem;
-  }
-
-  .wallet-info h3 {
-    margin: 0;
-    font-size: 1.3rem;
-  }
-
-  .wallet-info p {
-    margin: 0;
-    font-size: 0.85rem;
-    opacity: 0.7;
-  }
 }
 
-/* TAGS */
+.wallet-icon {
+  font-size: 32px;
+}
+
+.wallet-info h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.wallet-info p {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #787b92;
+}
+
 .wallet-features {
-  margin: 12px 0;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-
-  .feature-tag {
-    background: #333;
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-  }
+  margin: 10px 0 10px;
 }
 
-/* INSTALL BUTTON */
+.feature-tag {
+  background: rgba(242, 243, 255, 0.9);
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #4e4f70;
+}
+
+/* ===== Install buttons ===== */
 .install-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-
-  .install-btn {
-    background: #4e7df0;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: #3c66c9;
-    }
-  }
-
-  .mobile-options {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-
-    .mobile-label {
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-
-    .mobile-btn {
-      background: #333;
-      padding: 6px 10px;
-      border-radius: 8px;
-      color: #ddd;
-      text-decoration: none;
-      font-size: 0.8rem;
-    }
-  }
+  gap: 8px;
 }
 
-/* FOOTER */
+.install-btn {
+  background: var(--accent-color);
+  color: #fff;
+  padding: 9px 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.install-icon {
+  font-size: 15px;
+}
+
+.mobile-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.mobile-label {
+  font-size: 12px;
+  color: #6a6a80;
+}
+
+.mobile-btn {
+  padding: 5px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ios {
+  background: #000;
+  color: #fff;
+}
+.android {
+  background: #3ddc84;
+  color: #000;
+}
+
+/* ===== Footer ===== */
 .popup-footer {
-  margin-top: 25px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 18px;
+  border-top: 1px solid rgba(230, 232, 245, 0.9);
+  padding-top: 12px;
+}
 
-  .security-note {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 15px;
+.security-note {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
 
-    .security-icon {
-      font-size: 1.4rem;
-    }
+.security-icon {
+  font-size: 22px;
+}
 
-    .security-text h4 {
-      margin: 0;
-    }
+.security-text h4 {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
 
-    .security-text p {
-      margin: 2px 0 0;
-      opacity: 0.7;
-      font-size: 0.85rem;
-    }
-  }
+.security-text p {
+  margin: 0;
+  font-size: 12px;
+  color: #777992;
+}
 
-  .help-section {
-    h4 {
-      margin-bottom: 6px;
-    }
+.help-section h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
 
-    .help-links {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+.help-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 
-      a {
-        color: #76a8ff;
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-    }
-  }
+.help-links a {
+  font-size: 12px;
+  text-decoration: none;
+  color: #4f5bf6;
+}
+.help-links a:hover {
+  text-decoration: underline;
 }

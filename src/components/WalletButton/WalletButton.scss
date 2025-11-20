@@ -1,455 +1,274 @@
-// src/components/WalletButton/WalletButton.scss
+/* ===== Wrapper & chip (same as before) ===== */
+.wb-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
 
-.wallet-button {
+.wb-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  min-width: 210px;
+  max-width: 260px;
+  height: 40px;
+
+  padding: 0 14px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.wb-chip--connect {
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.5);
+}
+
+.wb-chip--connect:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(88, 28, 135, 0.55);
+}
+
+.wb-chip--connect:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.wb-chip--connected {
+  background: rgba(17, 24, 39, 0.95);
+  color: #f9fafb;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.6);
+}
+
+/* Left & right sections */
+.wb-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wb-token {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  position: relative;
-
-  /* === CONNECT STATE === */
-  &.connect {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-
-    &.desktop {
-      padding: 0.8rem 1.2rem;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-      }
-    }
-
-    &.mobile {
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-
-      &:active:not(:disabled) {
-        transform: scale(0.96);
-      }
-    }
-
-    &:disabled {
-      opacity: 0.8;
-      cursor: not-allowed;
-    }
-
-    .wallet-icon {
-      font-size: 1rem;
-    }
-
-    .connect-state {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    &.connecting {
-      opacity: 0.9;
-    }
-  }
-
-  /* === CONNECTED STATE === */
-  &.connected {
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    color: #1e293b;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-    &.desktop {
-      padding: 0.4rem 0.6rem;
-      font-size: 0.9rem;
-    }
-
-    &.mobile {
-      padding: 0.35rem 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    &.animate-connect {
-      animation: pulseConnect 0.6s ease;
-    }
-
-    .wallet-display {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-
-      &.desktop {
-        padding: 0.4rem 0.8rem;
-
-        &:hover {
-          background: #f8fafc;
-        }
-
-        &:active {
-          background: #f1f5f9;
-        }
-      }
-
-      &.mobile {
-        padding: 0.3rem 0.5rem;
-        gap: 0.4rem;
-
-        &:active {
-          background: #f1f5f9;
-        }
-      }
-
-      .wallet-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-        align-items: flex-start;
-        min-width: 0; // Prevent text overflow
-
-        .network-info {
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
-          color: #64748b;
-
-          &.desktop {
-            font-size: 0.8rem;
-          }
-
-          &.mobile {
-            font-size: 0.7rem;
-          }
-
-          .network-dot {
-            width: 6px;
-            height: 6px;
-            background: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-          }
-
-          .balance {
-            font-weight: 700;
-            color: #1e293b;
-            white-space: nowrap;
-          }
-        }
-
-        .address {
-          font-weight: 600;
-          color: #475569;
-          font-family: 'Courier New', monospace;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-
-          &.desktop {
-            font-size: 0.85rem;
-          }
-
-          &.mobile {
-            font-size: 0.75rem;
-          }
-        }
-      }
-
-      .dropdown-arrow {
-        color: #94a3b8;
-        transition: transform 0.3s ease;
-        margin-left: 0.3rem;
-        flex-shrink: 0;
-
-        &.desktop {
-          font-size: 0.8rem;
-        }
-
-        &.mobile {
-          font-size: 0.7rem;
-        }
-
-        &.open {
-          transform: rotate(180deg);
-          color: #1e293b;
-        }
-      }
-    }
-
-    /* === DROPDOWN MENU === */
-    .wallet-dropdown {
-      position: fixed;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
-      animation: slideDown 0.2s ease;
-
-      @media (max-width: 480px) {
-        // Mobile: Full width with margins
-        bottom: auto;
-        left: 0.5rem;
-        right: 0.5rem;
-        width: calc(100% - 1rem);
-        max-width: 100%;
-        max-height: 60vh;
-        overflow-y: auto;
-        border-radius: 12px;
-
-        // Position above button
-        bottom: auto;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      @media (min-width: 481px) {
-        // Desktop: Positioned below button
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        right: 0;
-        min-width: 300px;
-      }
-
-      .dropdown-header {
-        padding: 0.9rem;
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        border-radius: 10px 10px 0 0;
-
-        .account-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-
-          .full-address {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            cursor: pointer;
-
-            .label {
-              font-size: 0.7rem;
-              font-weight: 700;
-              color: #64748b;
-              text-transform: uppercase;
-              letter-spacing: 0.4px;
-            }
-
-            .address-value {
-              font-size: 0.75rem;
-              font-weight: 600;
-              color: #1e293b;
-              font-family: 'Courier New', monospace;
-              word-break: break-all;
-              background: white;
-              padding: 0.4rem;
-              border-radius: 6px;
-              border: 1px solid #e2e8f0;
-              transition: all 0.2s ease;
-              max-height: 80px;
-              overflow-y: auto;
-
-              &:active {
-                background: #f8fafc;
-                border-color: #cbd5e1;
-              }
-            }
-          }
-
-          .network-detail {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.75rem;
-            color: #475569;
-
-            .network-indicator {
-              width: 7px;
-              height: 7px;
-              background: #10b981;
-              border-radius: 50%;
-              display: inline-block;
-              flex-shrink: 0;
-            }
-
-            .network-name {
-              font-weight: 600;
-              white-space: nowrap;
-            }
-          }
-        }
-      }
-
-      .dropdown-divider {
-        height: 1px;
-        background: #e2e8f0;
-      }
-
-      .dropdown-actions {
-        padding: 0.7rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        .dropdown-btn {
-          width: 100%;
-          padding: 0.65rem;
-          border: 1px solid #e2e8f0;
-          border-radius: 6px;
-          background: white;
-          color: #1e293b;
-          font-weight: 600;
-          font-size: 0.8rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          text-align: center;
-          white-space: nowrap;
-
-          &:active {
-            transform: scale(0.98);
-          }
-
-          &:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-          }
-
-          &.copy {
-            &.success {
-              background: #dcfce7;
-              border-color: #bbf7d0;
-              color: #059669;
-            }
-
-            &:not(.success):active {
-              background: #f8fafc;
-              border-color: #cbd5e1;
-            }
-          }
-
-          &.disconnect {
-            background: #fee2e2;
-            border-color: #fecaca;
-            color: #dc2626;
-
-            &:active {
-              background: #fecaca;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /* === LOCKED STATE === */
-  &.locked {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    animation: pulse 2s ease-in-out infinite;
-
-    &.desktop {
-      padding: 0.8rem 1.2rem;
-      font-size: 0.95rem;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
-      }
-    }
-
-    &.mobile {
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-
-      &:active {
-        transform: scale(0.96);
-      }
-    }
-
-    .locked-state {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-
-      .lock-icon {
-        font-size: 1rem;
-      }
-    }
-  }
+  font-size: 16px;
+  background: radial-gradient(circle at 30% 0%, #fde68a, #f97316);
+  color: #111827;
+  font-weight: 700;
 }
 
-/* === ANIMATIONS === */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.wb-token--ghost {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
-@keyframes slideDown {
-  from {
+.wb-balance {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.wb-balance-value {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-network {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.wb-address {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+}
+
+.wb-chevron {
+  font-size: 11px;
+  transition: transform 0.15s ease;
+}
+
+.wb-chevron--open {
+  transform: rotate(180deg);
+}
+
+.wb-connect-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ===== DROPDOWN PANEL (FIXED) ===== */
+
+.wb-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+
+  width: 280px;
+  max-width: 92vw;
+
+  background: #020617;
+  color: #e5e7eb;
+  border-radius: 18px;
+  padding: 12px 14px 10px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+
+  z-index: 999;
+  animation: wb-fade-down 0.16s ease-out;
+
+  /* make sure it never sticks to viewport edges */
+  box-sizing: border-box;
+}
+
+/* small arrow under chip */
+.wb-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 18px;
+  border-width: 0 7px 7px 7px;
+  border-style: solid;
+  border-color: transparent transparent #020617 transparent;
+}
+
+/* header inside card */
+.wb-dropdown-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.wb-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 0%, #4ade80, #16a34a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #022c22;
+}
+
+.wb-dropdown-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* full address – wrap properly, no horizontal scroll */
+.wb-dropdown-address {
+  font-size: 12px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+  line-height: 1.4;
+  word-break: break-all;
+  white-space: normal;
+}
+
+.wb-dropdown-network {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* buttons row */
+.wb-dropdown-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.wb-btn {
+  flex: 1;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  padding: 7px 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.wb-btn--ghost {
+  background: rgba(31, 41, 55, 0.95);
+  color: #e5e7eb;
+}
+
+.wb-btn--ghost:hover {
+  background: rgba(55, 65, 81, 1);
+  transform: translateY(-0.5px);
+}
+
+.wb-btn--danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.wb-btn--danger:hover {
+  background: #dc2626;
+  transform: translateY(-0.5px);
+}
+
+/* fade animation */
+@keyframes wb-fade-down {
+  0% {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-4px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes pulseConnect {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.01);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* === SCROLLBAR FIX === */
-.wallet-dropdown {
-  &::-webkit-scrollbar {
-    width: 4px;
+/* ===== Phone tweaks ===== */
+@media (max-width: 640px) {
+  .wb-wrapper {
+    width: 100%;
+    justify-content: flex-end;
   }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
+  .wb-chip {
+    min-width: 0;
+    width: 200px;
+    height: 38px;
+    padding: 0 12px;
   }
 
-  &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
+  /* dropdown almost full-width, still attached neatly under chip */
+  .wb-dropdown {
+    right: 8px;
+    width: calc(100vw - 16px);
+    max-width: none;
+  }
 
-    &:hover {
-      background: #94a3b8;
-    }
+  .wb-dropdown::before {
+    right: 26px;
   }
 }
