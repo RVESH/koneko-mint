@@ -15,6 +15,8 @@ const WalletButton = ({ className = "" }) => {
     // getNetworkName,
   } = useWalletContext();
 
+
+  
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
