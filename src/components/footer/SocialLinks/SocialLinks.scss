@@ -1,24 +1,43 @@
+/* src/components/SocialLinks/SocialLinks.scss */
+
 .social-links {
   display: flex;
-  gap: 1.08rem;
-  a {
-    color: #21527d;
-    font-size: 1.27rem;
-    background: #e7f0fb;
-    border-radius: 50%;
-    padding: 7px;
-    transition: background 0.2s, color 0.2s;
-    text-align: center;
-    box-shadow: 0 0 7px #bcd1f77a;
+  align-items: center;
+  gap: 10px;
+}
 
-    &:hover {
-      background: #21527d;
-      color: #fff;
-    }
+.social-links a {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #9ca3af;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
 
-    i {
-      display: block;
-      line-height: 1em;
-    }
+.social-links a:hover {
+  color: #e5e7eb;
+  background: radial-gradient(circle at 30% 0%, #4f46e5, #22c55e);
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .social-links a {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 }
