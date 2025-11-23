@@ -17,7 +17,7 @@ const Home = () => {
   // ✅ Added useEffect to load NFT data
   useEffect(() => {
     fetch("/room/metadata.json")
-      .then(res => res.json())
+      .then(res => res.json()) 
       .then(data => {
         setAllNfts(data);
       })
