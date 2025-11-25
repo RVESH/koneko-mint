@@ -1,16 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import contractService from '../services/contractService';
-import { useWalletContext } from './WalletContext';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { ethers } from "ethers";
+import { useWalletContext } from "./WalletContext";
+
+import config from "../utils/config";
+import contractABI from "../utils/contractABI.json";
 
 const ContractContext = createContext();
-
-export const useContractContext = () => {
-  const context = useContext(ContractContext);
-  if (!context) {
-    throw new Error('useContractContext must be used within ContractProvider');
-  }
-  return context;
-};
+export const useContractContext = () => useContext(ContractContext);
 
 export const ContractProvider = ({ children }) => {
   const { account, isConnected, chainId } = useWalletContext();
@@ -19,13 +15,14 @@ export const ContractProvider = ({ children }) => {
   const [mintFee, setMintFee] = useState("0");
   const [totalSupply, setTotalSupply] = useState("0");
   const [userNFTs, setUserNFTs] = useState([]);
-  const [contractInfo, setContractInfo] = useState(null);
 
   const [isInitializing, setIsInitializing] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
 
-  // --- Auto initialize when wallet connects ---
+  // ------------------------------------------------------------------
+  // 🔥 AUTO INITIALIZE WHEN WALLET CONNECTS
+  // ------------------------------------------------------------------
   useEffect(() => {
     if (isConnected && account && window.ethereum) {
       initializeContracts();
@@ -37,121 +34,183 @@ export const ContractProvider = ({ children }) => {
 
   useEffect(() => {
     if (contractsInitialized && account) {
-      loadUserNFTs();
-      loadContractInfo();
+      refreshData();
     }
   }, [contractsInitialized, account]);
 
-  // ---------------------------------------------
-  // 🚀 SAFE initializeContracts()
-  // ---------------------------------------------
-const initializeContracts = async () => {
-  try {
-    setIsInitializing(true);
-
-    // Only init when wallet is connected
-    if (!account) return;
-
-    await contractService.initialize(window.ethereum);
-
-    setContractsInitialized(true);
-  } catch (e) {
-    console.log("Contract init failed:", e);
-  } finally {
-    setIsInitializing(false);
-  }
-};
-
-
-  // Load contract info
-  const loadContractInfo = async () => {
+  // ------------------------------------------------------------------
+  // 🔥 INITIALIZE CONTRACT (READ + WRITE)
+  // ------------------------------------------------------------------
+  const initializeContracts = async () => {
     try {
-      const info = await contractService.getContractInfo();
-      setContractInfo(info);
-      setMintFee(info.mintFee);
-      setTotalSupply(info.totalSupply);
-    } catch (error) {
-      console.error('Failed to load contract info:', error);
+      setIsInitializing(true);
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      const contract = new ethers.Contract(
+        config.contractAddress,
+        contractABI,
+        signer
+      );
+
+      window._nftContract = contract;
+      window._readProvider = provider;
+
+      setContractsInitialized(true);
+    } catch (e) {
+      console.error("Contract init failed:", e);
+    } finally {
+      setIsInitializing(false);
     }
   };
 
-  // Load NFTs of user
+  // ------------------------------------------------------------------
+  // 🔥 LOAD CONTRACT INFO
+  // ------------------------------------------------------------------
+  const loadContractInfo = async () => {
+    if (!window._nftContract) return;
+
+    try {
+      const contract = window._nftContract;
+
+      const fee = await contract.mintFee();
+      const supply = await contract.totalSupply();
+
+      setMintFee(ethers.formatEther(fee));
+      setTotalSupply(Number(supply));
+    } catch (e) {
+      console.error("Failed to load contract info:", e);
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // 🔥 LOAD USER NFTS (WORKS FOR ALL CONTRACT TYPES)
+  // ------------------------------------------------------------------
   const loadUserNFTs = async () => {
-    if (!account) return;
+    if (!account || !window._nftContract || !window._readProvider) return;
+
     try {
       setIsLoadingNFTs(true);
-      const nfts = await contractService.getUserNFTs(account);
-      setUserNFTs(nfts);
-    } catch (error) {
-      console.error('Failed to load user NFTs:', error);
+
+      const provider = window._readProvider;
+      const contract = window._nftContract;
+
+      // Check if ERC721Enumerable exists
+      const isEnumerable =
+        typeof contract.tokenOfOwnerByIndex === "function";
+
+      let owned = [];
+
+      if (isEnumerable) {
+        // ⭐ BEST WAY
+        const balance = await contract.balanceOf(account);
+        const total = Number(balance);
+
+        for (let i = 0; i < total; i++) {
+          const tokenId = await contract.tokenOfOwnerByIndex(account, i);
+          owned.push({ tokenId: Number(tokenId), owner: account });
+        }
+      } else {
+        // ⭐ FALLBACK: READ TRANSFER LOGS
+        const iface = new ethers.Interface(contractABI);
+
+        const logs = await provider.getLogs({
+          address: config.contractAddress,
+          fromBlock: 0,
+          toBlock: "latest",
+          topics: [iface.getEventTopic("Transfer")],
+        });
+
+        const tokens = logs
+          .map((log) => {
+            try {
+              const decoded = iface.parseLog(log);
+              if (
+                decoded.args.to.toLowerCase() === account.toLowerCase()
+              ) {
+                return Number(decoded.args.tokenId);
+              }
+            } catch {}
+            return null;
+          })
+          .filter(Boolean);
+
+        const unique = [...new Set(tokens)];
+        owned = unique.map((id) => ({
+          tokenId: id,
+          owner: account,
+        }));
+      }
+
+      setUserNFTs(owned);
+    } catch (e) {
+      console.error("Failed to loadUserNFTs:", e);
       setUserNFTs([]);
     } finally {
       setIsLoadingNFTs(false);
     }
   };
 
-  // ----------------------------------------------------
-  // 🚀 SAFE mintNFT() (Blocks if MetaMask locked)
-  // ----------------------------------------------------
+  // ------------------------------------------------------------------
+  // 🔥 MINT NFT
+  // ------------------------------------------------------------------
   const mintNFT = async (quantity = 1) => {
-    if (!account || !contractsInitialized) {
-      throw new Error("Wallet not connected or contracts not initialized");
-    }
+    if (!window._nftContract) throw new Error("Contract not initialized");
 
-    // 🔐 BLOCK if MetaMask locked
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
-    if (!accounts || accounts.length === 0) {
-      throw new Error("MetaMask locked. Please unlock wallet before minting.");
-    }
+    const contract = window._nftContract;
 
     try {
       setIsMinting(true);
 
-      const canMint = await contractService.canUserMint(account);
-      if (!canMint) throw new Error("You are not allowed to mint NFTs");
+      const fee = await contract.mintFee();
+      const totalPrice = fee * BigInt(quantity);
 
-      const receipt = await contractService.mintNFT(account, quantity);
+      const tx = await contract.mint(quantity, { value: totalPrice });
+      const receipt = await tx.wait();
 
-      await Promise.all([
-        loadUserNFTs(),
-        loadContractInfo()
-      ]);
+      await refreshData();
 
       return receipt;
-
-    } catch (error) {
-      console.error("❌ Minting failed:", error);
-      throw error;
+    } catch (e) {
+      console.error("Minting failed:", e);
+      throw e;
     } finally {
       setIsMinting(false);
     }
   };
 
+  // ------------------------------------------------------------------
+  // 🔥 RESET DATA
+  // ------------------------------------------------------------------
   const resetContractData = () => {
     setMintFee("0");
     setTotalSupply("0");
     setUserNFTs([]);
-    setContractInfo(null);
   };
 
+  // ------------------------------------------------------------------
+  // 🔥 REFRESH ALL DATA
+  // ------------------------------------------------------------------
   const refreshData = async () => {
-    if (contractsInitialized && account) {
-      await Promise.all([loadUserNFTs(), loadContractInfo()]);
-    }
+    if (!window._nftContract || !account) return;
+
+    await loadContractInfo();
+    await loadUserNFTs();
   };
 
+  // ------------------------------------------------------------------
   const value = {
     contractsInitialized,
     mintFee,
     totalSupply,
     userNFTs,
-    contractInfo,
     isInitializing,
     isMinting,
     isLoadingNFTs,
     mintNFT,
     refreshData,
-    initializeContracts
+    initializeContracts,
   };
 
   return (

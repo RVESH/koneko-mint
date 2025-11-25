@@ -223,29 +223,51 @@ class ContractService {
   }
 
   // Get contract info
-  async getContractInfo() {
+// Get contract info (fully fixed)
+async getContractInfo() {
+  try {
+    // 1) TRY reading mintFee from MintController
+    let mintFee = "0";
     try {
-      const [mintFee, totalSupply] = await Promise.all([
-        this.getMintFee(),
-        this.getTotalSupply()
-      ]);
-
-      return {
-        mintFee,
-        totalSupply,
-        nftAddress: CONTRACTS.ERC721TOKEN,
-        mintControllerAddress: CONTRACTS.MINT_CONTROLLER
-      };
-    } catch (error) {
-      console.error('Get contract info failed:', error);
-      return {
-        mintFee: "0",
-        totalSupply: "0",
-        nftAddress: CONTRACTS.ERC721TOKEN,
-        mintControllerAddress: CONTRACTS.MINT_CONTROLLER
-      };
+      const feeBN = await this.contracts.mintController.getMintFee();
+      mintFee = ethers.formatEther(feeBN);
+    } catch (e) {
+      console.warn("MintController.getMintFee() failed → trying fallback");
     }
+
+    // 2) FALLBACK: read mint fee from NFT contract (if exists)
+    try {
+      const contract = this.contracts.nft;
+      const fee =
+        (contract.mintFee && await contract.mintFee()) ||
+        (contract.cost && await contract.cost()) ||
+        (contract.price && await contract.price()) ||
+        (contract.mintPrice && await contract.mintPrice());
+
+      if (fee) mintFee = ethers.formatEther(fee);
+    } catch (e) {}
+
+    // 3) Total supply
+    const supplyBN = await this.contracts.nft.totalSupply();
+    const totalSupply = Number(supplyBN);
+
+    return {
+      mintFee,
+      totalSupply,
+      nftAddress: CONTRACTS.ERC721TOKEN,
+      mintControllerAddress: CONTRACTS.MINT_CONTROLLER
+    };
+  } catch (error) {
+    console.error("Get contract info failed:", error);
+    return {
+      mintFee: "0",
+      totalSupply: 0,
+      nftAddress: CONTRACTS.ERC721TOKEN,
+      mintControllerAddress: CONTRACTS.MINT_CONTROLLER
+    };
   }
+}
+
 }
 
 export default new ContractService();

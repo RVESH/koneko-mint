@@ -40,60 +40,91 @@ const MintPage = () => {
   }, []);
 
   const selectedNFT = nfts.find(nft => nft.id === nftId);
-  const isAlreadyMinted = userNFTs.some(n => n.tokenId === String(nftId));
+  const isAlreadyMinted = userNFTs.some(n => (n.tokenId) === Number(nftId));
 
-  const handleMint = async (quantity, totalPrice) => {
-    try {
-      setError(null);
+  // inside MintPage component — replace handleMint with:
+const handleMint = async (quantity, totalPrice) => {
+  try {
+    setError(null);
 
-      if (!isConnected || !account) {
-        alert("Please connect your wallet first!");
-        return;
-      }
-
-      if (!window.ethereum) {
-        alert("Please start Ganache and unlock MetaMask.");
-        return;
-      }
-
-      // ✅ Ensure Ganache Network
-      const netId = await window.ethereum.request({ method: "net_version" });
-      if (netId !== "5777" && netId !== "1337") {
-        alert("Please switch MetaMask to the Ganache Local network.");
-        return;
-      }
-
-      setMinting(true);
-
-      // ✅ Use ethers provider from MetaMask
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      // ✅ Create contract instance connected to signer
-      const contract = new ethers.Contract(
-        config.contractAddress,
-        contractABI,
-        signer
-      );
-
-      const weiValue = ethers.parseEther(totalPrice.toString());
-      const tx = await contract.mint(quantity, { value: weiValue });
-      const receipt = await tx.wait();
-
-      console.log("🎉 Mint successful:", receipt);
-      setMintSuccess(true);
-      refreshData && refreshData();
-    } catch (error) {
-      console.error("💥 Mint failed:", error);
-      if (error?.code === -32002) {
-        alert("MetaMask RPC is busy or locked. Unlock and try again.");
-      } else {
-        setError(error.message || "Mint failed. Try again.");
-      }
-    } finally {
-      setMinting(false);
+    if (!isConnected || !account) {
+      alert("Please connect your wallet first!");
+      return;
     }
-  };
+    if (!window.ethereum) {
+      alert("Please start Ganache and unlock MetaMask.");
+      return;
+    }
+
+    setMinting(true);
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
+    // if you want Ganache check chainId 1337 or 5777 — adapt to your local
+    if (![1337, 5777].includes(network.chainId)) {
+      alert("Please switch MetaMask to the Ganache Local network.");
+      setMinting(false);
+      return;
+    }
+
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(config.contractAddress, contractABI, signer);
+
+    // Ensure totalPrice is a plain numeric string (no "ETH")
+    const priceStr = String(totalPrice).replace(/\s*ETH\s*$/i, "");
+    const weiValue = ethers.parseEther(priceStr);
+
+    const tx = await contract.mint(quantity, { value: weiValue });
+    const receipt = await tx.wait();
+
+    // decode logs robustly to get minted token IDs (ethers v6)
+    const iface = new ethers.Interface(contractABI);
+    const contractAddr = (contract.target || contract.address).toLowerCase();
+
+    const tokenIds = receipt.logs
+      .filter(l => l.address && l.address.toLowerCase() === contractAddr)
+      .map(l => {
+        try {
+          const parsed = iface.parseLog(l);
+          if (parsed && parsed.name === "Transfer") {
+            // ERC-721 Transfer(from,to,tokenId)
+            return Number(parsed.args.tokenId);
+          }
+        } catch (e) { /* ignore parse errors */ }
+        return null;
+      })
+      .filter(Boolean);
+
+    console.log("🎉 Mint successful tokenIds:", tokenIds);
+
+    // build mintedNFT to show in MintSuccess (first token)
+    const mintedNFT = {
+      tokenId: tokenIds[0] ?? null,
+      name: selectedNFT?.name ?? `NFT #${nftId}`,
+      image: selectedNFT?.image ?? `/room/images/${nftId}.png`,
+    };
+
+    setMintedTokenId(mintedNFT);
+    setMintSuccess(true);
+
+    // IMPORTANT: refreshData must re-fetch userNFTs from the contract
+    if (refreshData) await refreshData();
+
+  } catch (err) {
+    console.error("💥 Mint failed:", err);
+    if (err?.code === -32002) {
+      alert("MetaMask RPC is busy or locked. Unlock and try again.");
+    } else if (err?.code === 4001) {
+      setError("Transaction rejected by user.");
+    } else {
+      setError(err.message || "Mint failed. Try again.");
+    }
+  } finally {
+    setMinting(false);
+  }
+};
+
+
 
   const handleClose = () => {
     setMintSuccess(false);
@@ -102,11 +133,12 @@ const MintPage = () => {
 
   const handleBack = () => navigate("/explore");
 
-  if (mintSuccess)
-    return <MintSuccess onClose={handleClose} />;
+if (mintSuccess)
+  return <MintSuccess mintedNFT={mintedTokenId} onClose={handleClose} />;
+
 
   if (isAlreadyMinted)
-    return <MintSuccess isAlreadyMinted onBack={handleBack} />;
+    return <MintSuccess isAlreadyMinted onClose={handleBack} />;
 
   if (!selectedNFT)
     return <p>NFT not found.</p>;
@@ -127,7 +159,7 @@ const MintPage = () => {
             walletConnected
             minting={minting || isMinting}
             onMint={handleMint}
-            mintPrice={`${selectedNFT.price || "0.002"} ETH`}
+            mintPrice={`${selectedNFT.price || "0.002"} Op`}
             error={error}
           />
         </div>
