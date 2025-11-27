@@ -104,6 +104,8 @@ const handleMint = async (quantity, totalPrice) => {
       image: selectedNFT?.image ?? `/room/images/${nftId}.png`,
     };
 
+
+    
     setMintedTokenId(mintedNFT);
     setMintSuccess(true);
 
