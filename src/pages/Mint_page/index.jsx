@@ -104,14 +104,12 @@ const handleMint = async (quantity, totalPrice) => {
       image: selectedNFT?.image ?? `/room/images/${nftId}.png`,
     };
 
-
-    
     setMintedTokenId(mintedNFT);
     setMintSuccess(true);
 
     // IMPORTANT: refreshData must re-fetch userNFTs from the contract
     if (refreshData) await refreshData();
-
+ 
   } catch (err) {
     console.error("💥 Mint failed:", err);
     if (err?.code === -32002) {
