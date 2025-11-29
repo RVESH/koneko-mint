@@ -7,6 +7,9 @@ import { useContractContext } from "../../context/ContractContext";
 import BulkMintSelector from "./components/BulkMintSelector/BulkMintSelector";
 import config from "../../utils/config";
 import contractABI from "../../utils/contractABI.json";
+import { CONTRACTS } from "../../contracts/config"; // path adjust if necessary
+import MINT_CONTROLLER_ABI from "../../contracts/MintController.json"; // path adjust
+
 import "./RandomMint.scss";
 
 const RandomMint = () => {
@@ -62,59 +65,62 @@ const RandomMint = () => {
 
   // ---------------------- BULK MINT HANDLER ----------------------
   // inside RandomMint component — replace handleBulkMint with:
-const handleBulkMint = async (quantity, totalPrice) => {
+const handleBulkMint = async (quantity) => {
   setError(null);
 
   if (!isConnected || !account) {
     setError("Please connect your wallet first!");
     return;
   }
-  if (!contractsInitialized) {
-    setError("Contracts not initialized. Please switch network.");
-    return;
-  }
 
   setIsLoading(true);
-  setShowSuccess(false);
 
   try {
     const provider = new ethers.BrowserProvider(window.ethereum);
-    const network = await provider.getNetwork();
-    // optional: check chain id here
     const signer = await provider.getSigner();
-    const contract = new ethers.Contract(config.contractAddress, contractABI, signer);
 
-    const priceStr = String(totalPrice).replace(/\s*ETH\s*$/i, "");
-    const weiValue = ethers.parseEther(priceStr);
+    // USE MintController contract (IMPORTANT)
+    const controller = new ethers.Contract(
+      CONTRACTS.MINT_CONTROLLER,
+      MINT_CONTROLLER_ABI.abi,
+      signer
+    );
 
-    const tx = await contract.mint(quantity, { value: weiValue }); // or contract.mintNFT if that is your method
+    // Read mint fee (BigInt)
+    const mintFee = await controller.getMintFee();
+    const totalFee = mintFee * BigInt(quantity);
+
+    let tx;
+    if (quantity === 1) {
+      tx = await controller.mint(account, { value: totalFee });
+    } else {
+      tx = await controller.mintBatch(account, quantity, { value: totalFee });
+    }
+
     const receipt = await tx.wait();
 
-    const iface = new ethers.Interface(contractABI);
-    const contractAddr = (contract.target || contract.address).toLowerCase();
-
+    // Decode token IDs
+    const iface = new ethers.Interface(MINT_CONTROLLER_ABI.abi);
     const tokenIds = receipt.logs
-      .filter(l => l.address && l.address.toLowerCase() === contractAddr)
-      .map(l => {
+      .map((log) => {
         try {
-          const parsed = iface.parseLog(l);
-          if (parsed && parsed.name === "Transfer") return Number(parsed.args.tokenId);
-        } catch (e) {}
+          const parsed = iface.parseLog(log);
+          if (parsed.name === "NewMint") {
+            return Number(parsed.args.tokenId);
+          }
+        } catch {}
         return null;
       })
       .filter(Boolean);
 
+    console.log("Minted token IDs:", tokenIds);
     setMintedTokenIds(tokenIds);
     setShowSuccess(true);
 
     await refreshData();
   } catch (err) {
-    console.error("Bulk minting failed:", err);
-    let friendlyMessage = "Minting failed! Please try again.";
-    if (err?.code === 4001) friendlyMessage = "Transaction rejected by user.";
-    else if (err?.message?.includes("insufficient")) friendlyMessage = "Not enough ETH.";
-    else if (err?.message?.includes("network")) friendlyMessage = "Network / RPC issue.";
-    setError(friendlyMessage);
+    console.error("Mint failed:", err);
+    setError("Minting failed! Please try again.");
   } finally {
     setIsLoading(false);
   }

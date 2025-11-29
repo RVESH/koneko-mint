@@ -7,5 +7,5 @@ export const CONTRACTS = {
     chainIdHex: "0x539",
     rpcUrl: "http://127.0.0.1:7545",
     name: "Ganache Local"
-  }
+  }   
 };

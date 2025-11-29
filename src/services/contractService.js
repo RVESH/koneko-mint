@@ -88,6 +88,8 @@ class ContractService {
     }
   }
 
+
+  
   // Get mint fee as string
   async getMintFee() {
     try {
@@ -180,17 +182,17 @@ class ContractService {
         throw new Error('Contracts not initialized');
       }
 
-      const mintFeeBigInt = await this.getMintFeeBigInt();
+      const mintFeeBigInt = await this.contracts.mintController.getMintFee();;
       const totalFee = mintFeeBigInt * BigInt(quantity);
 
       let tx;
-      if (quantity === 1) {
+     if (Number(quantity) === 1) {
         tx = await this.contracts.mintController.mint(recipient, {
           value: totalFee,
           gasLimit: 300000
         });
       } else {
-        tx = await this.contracts.mintController.mintBatch(recipient, quantity, {
+        tx = await this.contracts.mintController.mintBatch(recipient,  Number(quantity), {
           value: totalFee,
           gasLimit: 500000
         });
@@ -201,7 +203,9 @@ class ContractService {
       console.log('Transaction confirmed:', receipt);
 
       return receipt;
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error('Mint failed:', error);
       throw error;
     }
