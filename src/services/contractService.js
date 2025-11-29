@@ -88,7 +88,6 @@ class ContractService {
     }
   }
 
-
   
   // Get mint fee as string
   async getMintFee() {
