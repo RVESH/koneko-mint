@@ -1,3 +1,5 @@
+// FIXED: src/pages/RandomMint/index.jsx
+
 import React, { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import { useWalletContext } from "../../context/WalletContext";
@@ -16,12 +18,23 @@ const RandomMint = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ---------------------- LOAD PAGE DATA ----------------------
+  // ✅ FIXED: ADD DEPENDENCIES & INITIALIZE
   useEffect(() => {
     loadAll();
-  }, []);
+  }, [isConnected, account]); // ✅ ADD DEPENDENCIES
 
   async function loadAll() {
+    // ✅ ADD THIS - INITIALIZE CONTRACT SERVICE
+    if (isConnected && account && window.ethereum) {
+      console.log("🔧 Initializing contract service...");
+      try {
+        await contractService.initialize(window.ethereum);
+        console.log("✅ Contract service initialized");
+      } catch (e) {
+        console.error("❌ Init failed:", e);
+      }
+    }
+
     const res = await fetch("/room/metadata.json");
     const json = await res.json();
     setMetadata(json);
@@ -33,6 +46,9 @@ const RandomMint = () => {
   async function loadContractData() {
     const fee = await contractService.getMintFee();
     const supply = await contractService.getTotalSupply();
+
+    console.log("💰 Mint Fee:", fee, "ETH");
+    console.log("📊 Total Supply:", supply);
 
     setMintFee(fee);
     setTotalSupply(supply);
@@ -59,7 +75,6 @@ const RandomMint = () => {
 
   return (
     <div className="random-mint">
-      
       {error && <div className="error-banner">⚠️ {error}</div>}
 
       <BulkMintSelector
