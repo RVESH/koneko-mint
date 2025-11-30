@@ -1,156 +1,119 @@
+// src/pages/Mint_page/index.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ethers } from "ethers"; // ✅ use ethers instead of web3
+import { ethers } from "ethers";
+
 import { useWalletContext } from "../../context/WalletContext";
-import { useContractContext } from "../../context/ContractContext";
-import config from "../../utils/config";
-import contractABI from "../../utils/contractABI.json";
+import contractService from "../../services/contractService";
 
 import MintForm from "./components/MintForm";
 import NFTCard from "./components/NFTCard";
 import MintSuccess from "./mintSuccess/MintSuccess";
-import WalletButton from "../../components/WalletButton/WalletButton";
-import { CONTRACTS } from "../../contracts/config";
-import MINT_CONTROLLER_ABI from "../../contracts/MintController.json";
+
 import "./style.scss";
 
 const MintPage = () => {
   const { account, isConnected } = useWalletContext();
-  const {
-    contractsInitialized,
-    isMinting,
-    userNFTs,
-    refreshData,
-  } = useContractContext();
-
-  const [minting, setMinting] = useState(false);
-  const [error, setError] = useState(null);
-  const [mintSuccess, setMintSuccess] = useState(false);
-  const [mintedTokenId, setMintedTokenId] = useState(null);
-  const [nfts, setNfts] = useState([]);
-
   const { id } = useParams();
-  const navigate = useNavigate();
   const nftId = Number(id);
 
+  const [metadata, setMetadata] = useState([]);
+  const [selectedNFT, setSelectedNFT] = useState(null);
+  const [minting, setMinting] = useState(false);
+  const [mintSuccess, setMintSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  // ---------------------- LOAD NFT METADATA ----------------------
   useEffect(() => {
-    fetch("/room/metadata.json")
-      .then(res => res.json())
-      .then(setNfts)
-      .catch(console.error);
-  }, []);
+    const load = async () => {
+      const res = await fetch("/room/metadata.json");
+      const json = await res.json();
+      setMetadata(json);
 
-  const selectedNFT = nfts.find(nft => nft.id === nftId);
-  const isAlreadyMinted = userNFTs.some(n => (n.tokenId) === Number(nftId));
+      const nft = json.find((x) => x.id === nftId);
+      setSelectedNFT(nft);
+    };
 
-  // inside MintPage component — replace handleMint with:
-const handleMint = async (quantity = 1) => {
-  setError(null);
+    load();
+  }, [nftId]);
 
-  if (!isConnected || !account) {
-    alert("Please connect your wallet");
-    return;
-  }
+  if (!selectedNFT) return <p>Loading NFT…</p>;
 
-  setMinting(true);
-
-  try {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const controller = new ethers.Contract(
-      CONTRACTS.MINT_CONTROLLER,
-      MINT_CONTROLLER_ABI.abi,
-      signer
-    );
-
-    const mintFee = await controller.getMintFee();
-    const totalFee = mintFee * BigInt(quantity);
-
-    let tx;
-    if (quantity === 1) {
-      tx = await controller.mint(account, { value: totalFee });
-    } else {
-      tx = await controller.mintBatch(account, quantity, { value: totalFee });
+  // ---------------------- MINT FUNCTION ----------------------
+  const handleMint = async () => {
+    if (!isConnected || !account) {
+      alert("Please connect wallet first!");
+      return;
     }
 
-    const receipt = await tx.wait();
+    try {
+      setError("");
+      setMinting(true);
 
-    const iface = new ethers.Interface(MINT_CONTROLLER_ABI.abi);
-    const tokenIds = receipt.logs
-      .map((log) => {
+      // Mint exactly 1 NFT
+      const receipt = await contractService.mintNFT(account, 1);
+
+      console.log("Mint receipt:", receipt);
+
+      // 🔥 Decode Token ID (NewMint event)
+      let mintedId = null;
+      const iface = new ethers.Interface([
+        "event NewMint(address indexed account, uint256 tokenId)"
+      ]);
+
+      receipt.logs.forEach((log) => {
         try {
           const parsed = iface.parseLog(log);
-          if (parsed.name === "NewMint") {
-            return Number(parsed.args.tokenId);
+          if (parsed?.name === "NewMint") {
+            mintedId = Number(parsed.args.tokenId);
           }
         } catch {}
-        return null;
-      })
-      .filter(Boolean);
+      });
 
-    setMintedTokenId({
-      tokenId: tokenIds[0],
-      name: selectedNFT?.name,
-      image: selectedNFT?.image,
-    });
+      setMintSuccess({
+        tokenId: mintedId,
+        name: selectedNFT.name,
+        image: `/room/images/${selectedNFT.filename}`,
+      });
 
-    setMintSuccess(true);
-    await refreshData();
-  } catch (err) {
-    console.error("Mint error:", err);
-    setError("Mint failed. Try again.");
-  } finally {
-    setMinting(false);
-  }
-};
-
-
-
-
-  const handleClose = () => {
-    setMintSuccess(false);
-    setMintedTokenId(null);
+    } catch (err) {
+      console.error("Mint failed:", err);
+      setError("❌ Mint failed! Make sure Ganache + MetaMask are correct.");
+    } finally {
+      setMinting(false);
+    }
   };
 
-  const handleBack = () => navigate("/explore");
+  // ---------------------- SUCCESS CLOSE ----------------------
+  const handleClose = () => {
+    setMintSuccess(false);
+    navigate("/profile");
+  };
 
-if (mintSuccess)
-  return <MintSuccess mintedNFT={mintedTokenId} onClose={handleClose} />;
-
-
-  if (isAlreadyMinted)
-    return <MintSuccess isAlreadyMinted onClose={handleBack} />;
-
-  if (!selectedNFT)
-    return <p>NFT not found.</p>;
+  // ---------------------- RENDER ----------------------
+  if (mintSuccess)
+    return <MintSuccess mintedNFT={mintSuccess} onClose={handleClose} />;
 
   return (
     <div className="mint-page-container">
       <div className="mint-header">
-        <h1>🎨 Premium NFT Minting</h1>
+        <h1>🎨 Premium NFT Mint</h1>
       </div>
 
-      <WalletButton />
+      <div className="mint-content">
+        <NFTCard nft={selectedNFT} />
 
-      {isConnected ? (
-        <div className="mint-content">
-          <NFTCard nft={selectedNFT} />
-          <MintForm
-            nft={selectedNFT}
-            walletConnected
-            minting={minting || isMinting}
-            onMint={handleMint}
-            mintPrice={`${selectedNFT.price || "0.002"} Op`}
-            error={error}
-          />
-        </div>
-      ) : (
-        <div className="lock-screen">
-          <h3>🔐 Connect your wallet to mint</h3>
-          {error && <p className="error-msg">{error}</p>}
-        </div>
-      )}
+        <MintForm
+          nft={selectedNFT}
+          walletConnected={isConnected}
+          minting={minting}
+          onMint={handleMint}
+          mintPrice={`${selectedNFT.price || "0.002"} ETH`}
+          error={error}
+        />
+      </div>
     </div>
   );
 };
