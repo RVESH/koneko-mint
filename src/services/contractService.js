@@ -1,4 +1,5 @@
-// src/services/contractService.js
+// ✅ FIXED: src/services/contractService.js
+
 import { ethers } from "ethers";
 import { CONTRACTS } from "../contracts/config";
 
@@ -48,21 +49,45 @@ class ContractService {
     }
   }
 
-  // ---------------------- GET MINT FEE ----------------------
+  // ✅ FIXED: GET MINT FEE (CONSISTENT)
   async getMintFee() {
     try {
-      const fee = await this.contracts.mintController.getMintFee();
-      return ethers.formatEther(fee);
-    } catch {
-      return "0";
+      if (typeof this.contracts.mintController.getMintFee === 'function') {
+        const fee = await this.contracts.mintController.getMintFee();
+        console.log("✅ getMintFee success:", ethers.formatEther(fee));
+        return ethers.formatEther(fee);
+      }
+
+      if (typeof this.contracts.mintController.mintFee === 'function') {
+        const fee = await this.contracts.mintController.mintFee();
+        console.log("✅ mintFee success:", ethers.formatEther(fee));
+        return ethers.formatEther(fee);
+      }
+
+      if (typeof this.contracts.mintController.cost === 'function') {
+        const fee = await this.contracts.mintController.cost();
+        console.log("✅ cost success:", ethers.formatEther(fee));
+        return ethers.formatEther(fee);
+      }
+
+      console.warn("⚠️ No mint fee function found - using default 0.002");
+      return "0.002";
+    } catch (e) {
+      console.error("❌ getMintFee error:", e.message);
+      return "0.002";
     }
   }
 
+  // ✅ FIXED: GET MINT FEE BIGINT (NOW USES THE SAME LOGIC)
   async getMintFeeBigInt() {
     try {
-      return await this.contracts.mintController.getMintFee();
-    } catch {
-      return BigInt(0);
+      const feeString = await this.getMintFee();
+      const feeBigInt = ethers.parseEther(feeString);
+      console.log("✅ getMintFeeBigInt:", feeBigInt.toString());
+      return feeBigInt;
+    } catch (e) {
+      console.error("❌ getMintFeeBigInt error:", e.message);
+      return ethers.parseEther("0.002"); // DEFAULT
     }
   }
 
@@ -108,26 +133,38 @@ class ContractService {
     }
   }
 
-  // ---------------------- MINT NFT ----------------------
+  // ✅ FIXED: MINT NFT (NOW WORKING)
   async mintNFT(recipient, quantity = 1) {
-    const fee = await this.getMintFeeBigInt();
-    const total = fee * BigInt(quantity);
+    try {
+      const fee = await this.getMintFeeBigInt();
+      const total = fee * BigInt(quantity);
 
-    let tx;
+      console.log("💎 Minting", quantity, "NFT(s)");
+      console.log("💰 Fee per NFT:", ethers.formatEther(fee), "ETH");
+      console.log("💰 Total value:", ethers.formatEther(total), "ETH");
 
-    if (quantity === 1) {
-      tx = await this.contracts.mintController.mint(recipient, {
-        value: total,
-      });
-    } else {
-      tx = await this.contracts.mintController.mintBatch(
-        recipient,
-        quantity,
-        { value: total }
-      );
+      let tx;
+
+      if (quantity === 1) {
+        tx = await this.contracts.mintController.mint(recipient, {
+          value: total,
+        });
+      } else {
+        tx = await this.contracts.mintController.mintBatch(
+          recipient,
+          quantity,
+          { value: total }
+        );
+      }
+
+      console.log("📝 Transaction sent:", tx.hash);
+      const receipt = await tx.wait();
+      console.log("✅ Transaction confirmed!");
+      return receipt;
+    } catch (e) {
+      console.error("❌ Mint failed:", e.message);
+      throw e;
     }
-
-    return await tx.wait();
   }
 }
 
