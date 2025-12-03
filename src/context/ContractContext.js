@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { ethers } from "ethers";
-import { useWalletContext } from "./WalletContext";
+// ✅ PRODUCTION READY: src/context/ContractContext.js
+// Clean - uses contractService for ALL contract calls
+// NO direct window._nftContract, NO iface.getEventTopic, NO duplicates
 
-import config from "../utils/config";
-import contractABI from "../utils/contractABI.json";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useWalletContext } from "./WalletContext";
+import contractService from "./../services/contractService";
 
 const ContractContext = createContext();
 export const useContractContext = () => useContext(ContractContext);
@@ -39,27 +40,29 @@ export const ContractProvider = ({ children }) => {
   }, [contractsInitialized, account]);
 
   // ------------------------------------------------------------------
-  // 🔥 INITIALIZE CONTRACT (READ + WRITE)
+  // 🔥 INITIALIZE CONTRACTS
   // ------------------------------------------------------------------
   const initializeContracts = async () => {
     try {
       setIsInitializing(true);
+      console.log("🔧 Initializing contracts...");
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
+      // Initialize contractService with wallet provider
+      const success = await contractService.initialize(window.ethereum);
 
-      const contract = new ethers.Contract(
-        config.contractAddress,
-        contractABI,
-        signer
-      );
+      if (!success) {
+        throw new Error("Contract service initialization failed");
+      }
 
-      window._nftContract = contract;
-      window._readProvider = provider;
+      // Load initial data
+      await loadContractInfo();
+      await loadUserNFTs();
 
       setContractsInitialized(true);
+      console.log("✅ Contracts initialized successfully");
     } catch (e) {
-      console.error("Contract init failed:", e);
+      console.error("❌ Contract init failed:", e);
+      setContractsInitialized(false);
     } finally {
       setIsInitializing(false);
     }
@@ -69,83 +72,42 @@ export const ContractProvider = ({ children }) => {
   // 🔥 LOAD CONTRACT INFO
   // ------------------------------------------------------------------
   const loadContractInfo = async () => {
-    if (!window._nftContract) return;
-
     try {
-      const contract = window._nftContract;
+      console.log("📝 Loading contract info...");
 
-      const fee = await contract.mintFee();
-      const supply = await contract.totalSupply();
+      // Get fee from MintController via contractService
+      const fee = await contractService.getMintFee();
+      
+      // Get total supply from ERC721TOKEN via contractService
+      const supply = await contractService.getTotalSupply();
 
-      setMintFee(ethers.formatEther(fee));
+      console.log("💰 Mint Fee:", fee, "ETH");
+      console.log("📊 Total Supply:", supply);
+
+      setMintFee(fee);
       setTotalSupply(Number(supply));
     } catch (e) {
-      console.error("Failed to load contract info:", e);
+      console.error("❌ Failed to load contract info:", e);
     }
   };
 
   // ------------------------------------------------------------------
-  // 🔥 LOAD USER NFTS (WORKS FOR ALL CONTRACT TYPES)
+  // 🔥 LOAD USER NFTS
   // ------------------------------------------------------------------
   const loadUserNFTs = async () => {
-    if (!account || !window._nftContract || !window._readProvider) return;
+    if (!account) return;
 
     try {
       setIsLoadingNFTs(true);
+      console.log("📋 Loading user NFTs...");
 
-      const provider = window._readProvider;
-      const contract = window._nftContract;
+      // Get user NFTs from ERC721TOKEN via contractService
+      const nfts = await contractService.getUserNFTs(account);
 
-      // Check if ERC721Enumerable exists
-      const isEnumerable =
-        typeof contract.tokenOfOwnerByIndex === "function";
-
-      let owned = [];
-
-      if (isEnumerable) {
-        // ⭐ BEST WAY
-        const balance = await contract.balanceOf(account);
-        const total = Number(balance);
-
-        for (let i = 0; i < total; i++) {
-          const tokenId = await contract.tokenOfOwnerByIndex(account, i);
-          owned.push({ tokenId: Number(tokenId), owner: account });
-        }
-      } else {
-        // ⭐ FALLBACK: READ TRANSFER LOGS
-        const iface = new ethers.Interface(contractABI);
-
-        const logs = await provider.getLogs({
-          address: config.contractAddress,
-          fromBlock: 0,
-          toBlock: "latest",
-          topics: [iface.getEventTopic("Transfer")],
-        });
-
-        const tokens = logs
-          .map((log) => {
-            try {
-              const decoded = iface.parseLog(log);
-              if (
-                decoded.args.to.toLowerCase() === account.toLowerCase()
-              ) {
-                return Number(decoded.args.tokenId);
-              }
-            } catch {}
-            return null;
-          })
-          .filter(Boolean);
-
-        const unique = [...new Set(tokens)];
-        owned = unique.map((id) => ({
-          tokenId: id,
-          owner: account,
-        }));
-      }
-
-      setUserNFTs(owned);
+      console.log("✅ NFTs loaded:", nfts.length);
+      setUserNFTs(nfts);
     } catch (e) {
-      console.error("Failed to loadUserNFTs:", e);
+      console.error("❌ Failed to loadUserNFTs:", e);
       setUserNFTs([]);
     } finally {
       setIsLoadingNFTs(false);
@@ -156,24 +118,23 @@ export const ContractProvider = ({ children }) => {
   // 🔥 MINT NFT
   // ------------------------------------------------------------------
   const mintNFT = async (quantity = 1) => {
-    if (!window._nftContract) throw new Error("Contract not initialized");
-
-    const contract = window._nftContract;
+    if (!account) throw new Error("Account not connected");
 
     try {
       setIsMinting(true);
+      console.log("💎 Starting mint...");
 
-      const fee = await contract.mintFee();
-      const totalPrice = fee * BigInt(quantity);
+      // Call contractService which handles MintController
+      const receipt = await contractService.mintNFT(account, quantity);
 
-      const tx = await contract.mint(quantity, { value: totalPrice });
-      const receipt = await tx.wait();
+      console.log("✅ Mint successful:", receipt.transactionHash);
 
+      // Refresh data after mint
       await refreshData();
 
       return receipt;
     } catch (e) {
-      console.error("Minting failed:", e);
+      console.error("❌ Minting failed:", e);
       throw e;
     } finally {
       setIsMinting(false);
@@ -193,8 +154,9 @@ export const ContractProvider = ({ children }) => {
   // 🔥 REFRESH ALL DATA
   // ------------------------------------------------------------------
   const refreshData = async () => {
-    if (!window._nftContract || !account) return;
+    if (!account) return;
 
+    console.log("🔄 Refreshing data...");
     await loadContractInfo();
     await loadUserNFTs();
   };

@@ -131,7 +131,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: GPL-3.0-or-later\r\n\r\npragma solidity ^0.8.0;\r\n\r\n/**\r\n * @title TRC20 interface (compatible with ERC20 interface)\r\n * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md\r\n */\r\n  interface IERC20 {\r\n      function totalSupply() external view returns (uint256);\r\n\r\n      function balanceOf(address who) external view returns (uint256);\r\n\r\n      function allowance(address owner, address spender)\r\n      external view returns (uint256);\r\n\r\n      function transfer(address to, uint256 value) external returns (bool);\r\n\r\n      function approve(address spender, uint256 value)\r\n      external returns (bool);\r\n\r\n      function transferFrom(address from, address to, uint256 value)\r\n      external returns (bool);\r\n\r\n  }\r\n  interface IERC721 {\r\n    //Transfer ownership of NFT\r\n    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external;\r\n\r\n    //\r\n    function getSerialMintedCount() external view returns (uint256);\r\n\r\n    function updateSerialCount(uint256 value) external;\r\n\r\n    function mint(address to, uint256 tokenId) external returns (uint256);\r\n\r\n    function safeMint(address _to,uint256 tokenId) external returns (uint256);\r\n\r\n\r\n    //Transfer ownership of NFT\r\n    function transferFrom(address _from, address _to, uint256 _tokenId) external;\r\n\r\n  }\r\n\r\n  interface IAccessControl {\r\n      function hasRole(bytes32 role, address account) external view returns (bool);\r\n      function getRoleAdmin(bytes32 role) external view returns (bytes32);\r\n      function grantRole(bytes32 role, address account) external;\r\n      function revokeRole(bytes32 role, address account) external;\r\n      function renounceRole(bytes32 role, address account) external;\r\n  }\r\n\r\n",
-  "sourcePath": "D:\\rish rv\\contract\\contracts\\collection-mint\\interface.sol",
+  "sourcePath": "G:\\new\\contract\\contracts\\collection-mint\\interface.sol",
   "ast": {
     "absolutePath": "project:/contracts/collection-mint/interface.sol",
     "exportedSymbols": {
@@ -1777,7 +1777,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.10",
-  "updatedAt": "2025-10-01T09:35:16.681Z",
+  "updatedAt": "2025-12-03T11:21:59.476Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

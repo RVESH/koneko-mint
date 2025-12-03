@@ -10,7 +10,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: GPL-3.0-or-later\r\n\r\npragma solidity ^0.8.0;\r\n\r\nabstract contract Context {\r\n    function _msgSender() internal view virtual returns (address) {\r\n        return msg.sender;\r\n    }\r\n\r\n    function _msgData() internal view virtual returns (bytes calldata) {\r\n        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691\r\n        return msg.data;\r\n    }\r\n}\r\n",
-  "sourcePath": "D:\\rish rv\\contract\\contracts\\collection-mint\\context.sol",
+  "sourcePath": "G:\\new\\contract\\contracts\\collection-mint\\context.sol",
   "ast": {
     "absolutePath": "project:/contracts/collection-mint/context.sol",
     "exportedSymbols": {
@@ -259,7 +259,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.10",
-  "updatedAt": "2025-10-01T09:35:16.668Z",
+  "updatedAt": "2025-12-03T11:21:59.218Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
