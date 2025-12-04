@@ -171,6 +171,7 @@ class ContractService {
     }
   }
 
+  
   // ✅ DEBUG TEST FUNCTION
   async testMintDirect() {
     try {
