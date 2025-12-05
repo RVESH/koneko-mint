@@ -1,10 +1,10 @@
 // src/contracts/config.js
 export const CONTRACTS = {
-  ERC721TOKEN: "0xcD33a08510eA07b7B6699372e0ED880fa440A709",
-  MINT_CONTROLLER: "0x2C056ab6E562D4E4b36610ea60CBfCC12AF9566A",
+  ERC721TOKEN: "0x159B8e2EdB8fB74A899da93Dc4A6AfEBB028DEBF",
+  MINT_CONTROLLER: "0xFD16fC46B80da7b609a65f938D8fF6b144D28c12",
   NETWORK: {
-    chainId: 1337,
-    chainIdHex: "0x539",
+    chainId: 5777,
+    chainIdHex: "0x1691",
     rpcUrl: "http://127.0.0.1:7545",
     name: "Ganache Local"
   }   

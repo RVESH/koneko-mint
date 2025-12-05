@@ -1,7 +1,7 @@
 // src/pages/Profile/ProfilePage.jsx
 import React, { useEffect, useState } from "react";
 import { useWalletContext } from "../../../context/WalletContext";
-import { useContractContext } from "../../../context/ContractContext";
+import { useContract  } from "../../../context/ContractContext";
 import "./ProfilePage.scss";
 import CopyButton from "../../../components/CopyButton/CopyButton";
 import ProfileNFT from "../profileNFT/profileNFT";
@@ -9,7 +9,7 @@ import NFTPopup from "../../../components/NFTPopup/NFTPopup";
 
 const ProfilePage = () => {
   const { account, isConnected } = useWalletContext();
-  const { userNFTs, refreshData } = useContractContext();
+  const { userNFTs, refreshData } = useContract ();
 
   const [allNfts, setAllNfts] = useState([]);
   const [userMetaNFTs, setUserMetaNFTs] = useState([]);

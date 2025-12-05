@@ -1,178 +1,194 @@
-// ✅ PRODUCTION READY: src/context/ContractContext.js
-// Clean - uses contractService for ALL contract calls
-// NO direct window._nftContract, NO iface.getEventTopic, NO duplicates
-
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useWalletContext } from "./WalletContext";
-import contractService from "./../services/contractService";
+// ✅ ContractContext.js - React Context for Contract State
+import React, { createContext, useContext, useState, useCallback } from "react";
+import contractService from "../services/contractService";
 
 const ContractContext = createContext();
-export const useContractContext = () => useContext(ContractContext);
+
+export const useContract = () => {
+  const context = useContext(ContractContext);
+  if (!context) {
+    throw new Error("useContract must be used inside ContractProvider");
+  }
+  return context;
+};
 
 export const ContractProvider = ({ children }) => {
-  const { account, isConnected, chainId } = useWalletContext();
-
-  const [contractsInitialized, setContractsInitialized] = useState(false);
-  const [mintFee, setMintFee] = useState("0");
-  const [totalSupply, setTotalSupply] = useState("0");
+  const [account, setAccount] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [balance, setBalance] = useState("0");
+  const [totalSupply, setTotalSupply] = useState(0);
   const [userNFTs, setUserNFTs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [mintFee, setMintFee] = useState("0");
 
-  const [isInitializing, setIsInitializing] = useState(false);
-  const [isMinting, setIsMinting] = useState(false);
-  const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
-
-  // ------------------------------------------------------------------
-  // 🔥 AUTO INITIALIZE WHEN WALLET CONNECTS
-  // ------------------------------------------------------------------
-  useEffect(() => {
-    if (isConnected && account && window.ethereum) {
-      initializeContracts();
-    } else {
-      setContractsInitialized(false);
-      resetContractData();
-    }
-  }, [isConnected, account, chainId]);
-
-  useEffect(() => {
-    if (contractsInitialized && account) {
-      refreshData();
-    }
-  }, [contractsInitialized, account]);
-
-  // ------------------------------------------------------------------
-  // 🔥 INITIALIZE CONTRACTS
-  // ------------------------------------------------------------------
-  const initializeContracts = async () => {
+  // ✅ INITIALIZE CONTRACT
+  const initialize = useCallback(async (walletProvider) => {
     try {
-      setIsInitializing(true);
-      console.log("🔧 Initializing contracts...");
+      setLoading(true);
+      setError(null);
 
-      // Initialize contractService with wallet provider
-      const success = await contractService.initialize(window.ethereum);
+      const success = await contractService.initialize(walletProvider);
 
-      if (!success) {
-        throw new Error("Contract service initialization failed");
+      if (success) {
+        const acc = await contractService.getAccount();
+        setAccount(acc);
+        setIsConnected(true);
+
+        // Fetch initial data
+        await refreshData();
+      } else {
+        setError("Failed to initialize contract service");
       }
-
-      // Load initial data
-      await loadContractInfo();
-      await loadUserNFTs();
-
-      setContractsInitialized(true);
-      console.log("✅ Contracts initialized successfully");
     } catch (e) {
-      console.error("❌ Contract init failed:", e);
-      setContractsInitialized(false);
+      console.error("Initialize error:", e);
+      setError(e.message);
     } finally {
-      setIsInitializing(false);
+      setLoading(false);
     }
-  };
+  }, []);
 
-  // ------------------------------------------------------------------
-  // 🔥 LOAD CONTRACT INFO
-  // ------------------------------------------------------------------
-  const loadContractInfo = async () => {
+  // ✅ REFRESH ALL DATA
+  const refreshData = useCallback(async () => {
     try {
-      console.log("📝 Loading contract info...");
-
-      // Get fee from MintController via contractService
-      const fee = await contractService.getMintFee();
-      
-      // Get total supply from ERC721TOKEN via contractService
+      const acc = await contractService.getAccount();
+      const bal = await contractService.getAccountBalance();
       const supply = await contractService.getTotalSupply();
+      const fee = await contractService.getMintFee();
+      const paused = await contractService.isPaused();
+      const nfts = await contractService.getUserNFTs(acc);
 
-      console.log("💰 Mint Fee:", fee, "ETH");
-      console.log("📊 Total Supply:", supply);
-
-      setMintFee(fee);
-      setTotalSupply(Number(supply));
-    } catch (e) {
-      console.error("❌ Failed to load contract info:", e);
-    }
-  };
-
-  // ------------------------------------------------------------------
-  // 🔥 LOAD USER NFTS
-  // ------------------------------------------------------------------
-  const loadUserNFTs = async () => {
-    if (!account) return;
-
-    try {
-      setIsLoadingNFTs(true);
-      console.log("📋 Loading user NFTs...");
-
-      // Get user NFTs from ERC721TOKEN via contractService
-      const nfts = await contractService.getUserNFTs(account);
-
-      console.log("✅ NFTs loaded:", nfts.length);
+      setAccount(acc);
+      setBalance(bal);
+      setTotalSupply(supply);
+      setMintFee(fee.toString());
+      setIsPaused(paused);
       setUserNFTs(nfts);
     } catch (e) {
-      console.error("❌ Failed to loadUserNFTs:", e);
-      setUserNFTs([]);
-    } finally {
-      setIsLoadingNFTs(false);
+      console.error("Refresh data error:", e);
+      setError(e.message);
     }
-  };
+  }, []);
 
-  // ------------------------------------------------------------------
-  // 🔥 MINT NFT
-  // ------------------------------------------------------------------
-  const mintNFT = async (quantity = 1) => {
-    if (!account) throw new Error("Account not connected");
-
+  // ✅ MINT 1 NFT
+  const mint1 = useCallback(async () => {
     try {
-      setIsMinting(true);
-      console.log("💎 Starting mint...");
+      setLoading(true);
+      setError(null);
 
-      // Call contractService which handles MintController
-      const receipt = await contractService.mintNFT(account, quantity);
+      console.log("🚀 Starting mint 1 NFT...");
+      const receipt = await contractService.mint1();
 
-      console.log("✅ Mint successful:", receipt.transactionHash);
-
-      // Refresh data after mint
+      console.log("✅ Mint 1 successful!");
       await refreshData();
 
       return receipt;
     } catch (e) {
-      console.error("❌ Minting failed:", e);
+      console.error("Mint 1 error:", e);
+      setError(e.message);
       throw e;
     } finally {
-      setIsMinting(false);
+      setLoading(false);
     }
-  };
+  }, [refreshData]);
 
-  // ------------------------------------------------------------------
-  // 🔥 RESET DATA
-  // ------------------------------------------------------------------
-  const resetContractData = () => {
-    setMintFee("0");
-    setTotalSupply("0");
+  // ✅ MINT 3 NFTs
+  const mint3 = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("🚀 Starting mint 3 NFTs...");
+      const receipt = await contractService.mint3();
+
+      console.log("✅ Mint 3 successful!");
+      await refreshData();
+
+      return receipt;
+    } catch (e) {
+      console.error("Mint 3 error:", e);
+      setError(e.message);
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshData]);
+
+  // ✅ MINT 5 NFTs
+  const mint5 = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("🚀 Starting mint 5 NFTs...");
+      const receipt = await contractService.mint5();
+
+      console.log("✅ Mint 5 successful!");
+      await refreshData();
+
+      return receipt;
+    } catch (e) {
+      console.error("Mint 5 error:", e);
+      setError(e.message);
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshData]);
+
+  // ✅ MINT 10 NFTs
+  const mint10 = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("🚀 Starting mint 10 NFTs...");
+      const receipt = await contractService.mint10();
+
+      console.log("✅ Mint 10 successful!");
+      await refreshData();
+
+      return receipt;
+    } catch (e) {
+      console.error("Mint 10 error:", e);
+      setError(e.message);
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshData]);
+
+  // ✅ DISCONNECT
+  const disconnect = useCallback(() => {
+    setAccount(null);
+    setIsConnected(false);
+    setBalance("0");
+    setTotalSupply(0);
     setUserNFTs([]);
-  };
+    setError(null);
+  }, []);
 
-  // ------------------------------------------------------------------
-  // 🔥 REFRESH ALL DATA
-  // ------------------------------------------------------------------
-  const refreshData = async () => {
-    if (!account) return;
-
-    console.log("🔄 Refreshing data...");
-    await loadContractInfo();
-    await loadUserNFTs();
-  };
-
-  // ------------------------------------------------------------------
   const value = {
-    contractsInitialized,
-    mintFee,
+    // State
+    account,
+    isConnected,
+    balance,
     totalSupply,
     userNFTs,
-    isInitializing,
-    isMinting,
-    isLoadingNFTs,
-    mintNFT,
+    loading,
+    error,
+    isPaused,
+    mintFee,
+
+    // Functions
+    initialize,
     refreshData,
-    initializeContracts,
+    mint1,
+    mint3,
+    mint5,
+    mint10,
+    disconnect,
   };
 
   return (

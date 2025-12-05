@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 import './BulkMintSelector.scss';
 
 const BulkMintSelector = ({
-  onQuantityChange,
-  onMintClick,
-  isConnected,
-  isLoading,
-  nftPrice = 0,
-  previewImage,
-  availableCount
+  isConnected,           // ✅ FROM PARENT (RandomMint)
+  isLoading,             // ✅ FROM PARENT
+  nftPrice = 0,          // ✅ FROM PARENT
+  previewImage,          // ✅ FROM PARENT
+  availableCount = 12000, // ✅ FROM PARENT
+  onQuantityChange,      // ✅ FROM PARENT
+  onMintClick,           // ✅ FROM PARENT
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [showPriceAnimation, setShowPriceAnimation] = useState(false);
 
   const MIN_QUANTITY = 1;
-  const MAX_QUANTITY = Math.min(10, availableCount || 0); // cap at 10
+  const MAX_QUANTITY = Math.min(10, availableCount || 0);
   const totalPrice = (quantity * nftPrice).toFixed(6);
 
   // Animate price change
@@ -24,15 +25,32 @@ const BulkMintSelector = ({
     return () => clearTimeout(timer);
   }, [quantity, nftPrice]);
 
-  // Update quantity and preview
+  // Update quantity
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity >= MIN_QUANTITY && newQuantity <= MAX_QUANTITY) {
       setQuantity(newQuantity);
-      onQuantityChange(newQuantity);
+      onQuantityChange && onQuantityChange(newQuantity);
     }
   };
 
   const quickSelectOptions = [1, 3, 5, 10].filter(q => q <= MAX_QUANTITY);
+
+  // ✅ HANDLE MINT CLICK
+  const handleMintClick = async () => {
+    if (!isConnected) {
+      alert('❌ Please connect wallet first!');
+      return;
+    }
+
+    try {
+      console.log(`🚀 Minting ${quantity}...`);
+      await onMintClick(quantity); // ✅ CALL PARENT FUNCTION
+      setQuantity(1); // Reset
+    } catch (e) {
+      console.error('❌ Mint error:', e.message);
+      alert(`Error: ${e.message}`);
+    }
+  };
 
   const getMintButtonContent = () => {
     if (!isConnected) return '🔗 Connect Wallet';
@@ -127,7 +145,7 @@ const BulkMintSelector = ({
         <div className="action-area">
           <button
             className={`mint-btn ${!isConnected ? 'connect-btn' : 'primary-btn'}`}
-            onClick={() => onMintClick(quantity, totalPrice)}
+            onClick={handleMintClick}
             disabled={isMintDisabled}
           >
             {getMintButtonContent()}
