@@ -4,7 +4,7 @@
 const ERC721TOKEN = artifacts.require("ERC721TOKEN");
 const MintController = artifacts.require("MintController");
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer, network, accounts) {
   // 1️⃣ Deploy ERC721TOKEN
   await deployer.deploy(ERC721TOKEN, "MyNFTCollection", "MNFT");
   const nftInstance = await ERC721TOKEN.deployed();
@@ -27,6 +27,18 @@ module.exports = async function (deployer) {
   const mintControllerInstance = await MintController.deployed();
   console.log("MintController deployed at:", mintControllerInstance.address);
 
+
+    // ✅ 4️⃣ Grant MINTER_ROLE to MintController - DIRECT BYTES32 USE KAR
+  const nft = await ERC721TOKEN.deployed();
+  const MINTER_ROLE = "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6"; // ← Hardcoded MINTER_ROLE bytes32
+  
+  
+  try {
+    await nft.grantRole(MINTER_ROLE, mintControllerInstance.address, { from: accounts[0] });
+    console.log("✅ MintController granted MINTER_ROLE");
+  } catch (error) {
+    console.log("⚠️ Grant role error:", error.message);
+  }
   // console.log(`\n🚀 Starting deployment on: ${network}`);
   // console.log(`👑 Owner account: ${owner}`);
   //
