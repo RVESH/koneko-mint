@@ -21,6 +21,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log("Mint Start Time:", mintStartTime);
   console.log("Max Batch Size:", maxBatchSize);
 
+  
   // // 3️⃣ Deploy MintController
   await deployer.deploy(MintController, nftAddress, mintFee, mintStartTime, maxBatchSize);
   const mintControllerInstance = await MintController.deployed();
