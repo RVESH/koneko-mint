@@ -9,3 +9,4 @@ export const CONTRACTS = {
     name: "Ganache Local"
   }   
 };
+
