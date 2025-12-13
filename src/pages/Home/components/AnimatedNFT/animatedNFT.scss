@@ -1,0 +1,45 @@
+.animated-nft-wrapper {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 100%;
+  max-width: 1100px;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2rem;
+  pointer-events: none; // Hero buttons clickable remain
+}
+
+.nft-card {
+  width: 130px;
+  height: 180px;
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  overflow: hidden;
+  transform: translateY(0px);
+  transition: transform 0.4s ease;
+  opacity: 0.9;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+/* Floating animations */
+@keyframes float1 { 0% { transform: translateY(0px); } 50% { transform: translateY(-18px); } 100% { transform: translateY(0px); } }
+@keyframes float2 { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
+@keyframes float3 { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+@keyframes float4 { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
+
+.float-0 { animation: float1 6s ease-in-out infinite; }
+.float-1 { animation: float2 5.5s ease-in-out infinite; }
+.float-2 { animation: float3 7s ease-in-out infinite; }
+.float-3 { animation: float4 6.5s ease-in-out infinite; }

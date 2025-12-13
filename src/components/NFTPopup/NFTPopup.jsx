@@ -1,10 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMintedNFTs } from "../../utils/storageHelpers";
 import "./NFTPopup.scss";
+import ImageModal from "../ImageModal/imageModal.jsx";  
 import zoom from '../../images/zoom.png'; // Import the PNG
 
 const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
+  
+  const [isImageOpen, setIsImageOpen] = useState(false);
+  const handleZoomClick = () => {
+    setIsImageOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsImageOpen(false);
+  };
+
+
   const navigate = useNavigate();
   const mintedList = getMintedNFTs();
   const isMinted = mintedList.some(m => m.id === nft.id);
@@ -36,7 +47,8 @@ const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
             <figure className="popup-image">
               
               <img src={`/room/images/${nft.filename}`} alt={nft.name || `NFT #${nft.id}`} />
-              <img className="zoom" src={zoom} alt="zoom"/>
+              <img className="zoom" src={zoom} alt="zoom" 
+                 onClick={handleZoomClick}/>
 
               {isMinted && <span className="tag-owned">OWNED</span>}
             </figure>
@@ -89,6 +101,12 @@ const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
               </button>
             </div>
           </div>
+              {/* 🔥 Image Modal goes here */}
+    <ImageModal
+      nft={nft}
+      isOpen={isImageOpen}
+      onClose={handleCloseModal}
+    />
         </div>
       </div>
     </div>
