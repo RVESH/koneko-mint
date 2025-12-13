@@ -137,6 +137,7 @@ export const ContractProvider = ({ children }) => {
     }
   }, [refreshData]);
 
+  
   // ✅ MINT 10 NFTs
   const mint10 = useCallback(async () => {
     try {

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMintedNFTs } from "../../utils/storageHelpers";
 import "./NFTPopup.scss";
+import zoom from '../../images/zoom.png'; // Import the PNG
 
 const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
   const navigate = useNavigate();
@@ -31,8 +32,12 @@ const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
         <div className="popup-main">
           {/* Image Section */}
           <div className="popup-image-section">
+            
             <figure className="popup-image">
+              
               <img src={`/room/images/${nft.filename}`} alt={nft.name || `NFT #${nft.id}`} />
+              <img className="zoom" src={zoom} alt="zoom"/>
+
               {isMinted && <span className="tag-owned">OWNED</span>}
             </figure>
           </div>
@@ -42,9 +47,9 @@ const NFTPopup = ({ nft, onClose, showFromSearch = false }) => {
             {/* Header */}
             <div className="popup-header-info">
               <h3 className="title">{nft.name || `Character #${nft.id}`}</h3>
-              <small className="rarity-badge">Uncommon</small>
+              <small className="rarity-badge">RARE</small>
               <small className="id">#{String(nft.id).padStart(5, '0')}</small>
-            </div>
+             </div>
 
             {/* Details Grid - Compact */}
             <dl className="details-grid">
