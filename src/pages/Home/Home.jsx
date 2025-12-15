@@ -89,9 +89,9 @@ const Home = () => {
             <span className="text-gradient-gold title-word">One</span>
             <span className="text-gradient-gold title-word">Block</span>
             <br />
-            <span className="text-gradient-purple title-word">at</span>
-            <span className="text-gradient-purple title-word">a</span>
-            <span className="text-gradient-purple title-word">Time</span>
+            <span className="text-gradient-purple title-word">at.</span>
+            <span className="text-gradient-purple title-word">a </span>
+            <span className="text-gradient-purple title-word"> Time</span>
           </h1>
 
           {/* Subtitle with fade effect */}

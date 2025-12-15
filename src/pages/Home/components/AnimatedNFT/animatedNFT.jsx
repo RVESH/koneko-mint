@@ -6,9 +6,10 @@ import koneko1 from '../../../../images/koneko.png';
 import koneko2 from '../../../../images/koneko(1).png';
 import koneko3 from '../../../../images/koneko(2).png';
 import koneko4 from '../../../../images/koneko(3).png';
+import koneko5 from '../../../../images/koneko(4).png';
 
 const AnimatedNFT = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(1);
 
   // ✅ 4 images array
   const nftImages = [
@@ -16,18 +17,30 @@ const AnimatedNFT = () => {
     { id: 2, src: koneko2, alt: 'Koneko Character 2' },
     { id: 3, src: koneko3, alt: 'Koneko Character 3' },
     { id: 4, src: koneko4, alt: 'Koneko Character 4' },
+    { id: 5, src: koneko5, alt: 'Koneko Character 5' }
   ];
 
   // ✅ Auto-rotate every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % nftImages.length);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
-  }, [nftImages.length]);
+  }, []);
 
   // ✅ Manual navigation
   const goToSlide = (index) => setActiveIndex(index);
+
+  const getIndexing = (i) =>{
+    let _pos = [
+      [3,4,0,1,2],
+      [2,3,4,0,1],
+      [1,2,3,4,0],
+      [0,1,2,3,4],
+      [4,0,1,2,3]
+    ]
+    return _pos[activeIndex][i]
+  }
 
   return (
     <div className="animated-nft-container">
@@ -38,9 +51,7 @@ const AnimatedNFT = () => {
           {nftImages.map((nft, index) => (
             <div
               key={nft.id}
-              className={`carousel-slide ${
-                index === activeIndex ? 'active' : ''
-              } carousel-position-${index}`}
+              className={`carousel-slide carousel-position-${getIndexing(index)}`}
             >
               <img
                 src={nft.src}
