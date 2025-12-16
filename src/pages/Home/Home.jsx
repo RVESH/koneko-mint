@@ -7,7 +7,7 @@ import NFTSlider from "./NFTSlider/slideBar";
 import NFTPopup from "../../components/NFTPopup/NFTPopup";
 import AnimatedNFT from "./components/AnimatedNFT/animatedNFT";
 import { useNavigate } from "react-router-dom";
-
+import Roadmap from "../../components/Roadmap/Roadmap.jsx";
 const Home = () => {
   const navigate = useNavigate();
   const [selectedNFT, setSelectedNFT] = useState(null);
@@ -82,16 +82,16 @@ const Home = () => {
 
           {/* Main Title with Split Animation */}
           <h1 className="hero-title-premium">
-            <span className="title-word">Own</span>
-            <span className="title-word">the</span>
-            <span className="title-word">Future</span>
+            <span className="title-word">Own the Future</span>
+            {/* <span className="title-word"> the</span>
+            <span className="title-word">Future</span> */}
             <br />
-            <span className="text-gradient-gold title-word">One</span>
-            <span className="text-gradient-gold title-word">Block</span>
+            <span className="text-gradient-gold title-word">One Block</span>
+            {/* <span className="text-gradient-gold title-word">Block</span> */}
             <br />
-            <span className="text-gradient-purple title-word">at.</span>
-            <span className="text-gradient-purple title-word">a </span>
-            <span className="text-gradient-purple title-word"> Time</span>
+            {/* <span className="text-gradient-purple title-word">at</span> */}
+            {/* <span className="text-gradient-purple title-words"> </span> */}
+            <span className="text-gradient-purple title-word">at a Time</span>
           </h1>
 
           {/* Subtitle with fade effect */}
@@ -137,8 +137,8 @@ const Home = () => {
       </section>
 
       {/* Feature Components */}
-      <Features />
-      <About />
+      {/* <Features /> */}
+      {/* <About /> */}
 
       {/* ============ STATS SECTION ============ */}
       <section className="stats-premium">
@@ -146,7 +146,7 @@ const Home = () => {
           <div className="stats-orb stats-orb-1"></div>
           <div className="stats-orb stats-orb-2"></div>
         </div>
-
+<Roadmap/>
         <div className="container">
           <h2 className="stats-title">Our Impact</h2>
           <div className="stats-grid-premium">
