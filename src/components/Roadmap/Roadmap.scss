@@ -1,98 +1,67 @@
-/* ============ WAVE DESIGN ============ */
+/* ============ ROADMAP SECTION ============ */
 .roadmap-section {
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #0f0f1e 0%, #1a0033 50%, #0f0f1e 100%);
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a3e 50%, #0f0f1e 100%);
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 300px;
-    background: url('data:image/svg+xml,<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q300,20 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(102,126,234,0.1)"/></svg>');
-    background-size: cover;
-    opacity: 0.5;
-    animation: wave 6s ease-in-out infinite;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50px;
-    left: 0;
-    right: 0;
-    height: 300px;
-    background: url('data:image/svg+xml,<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q300,20 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(118,75,162,0.1)"/></svg>');
-    background-size: cover;
-    opacity: 0.5;
-    animation: wave 8s ease-in-out infinite reverse;
+  @media (max-width: 768px) {
+    padding: 4rem 1rem;
   }
 }
 
-@keyframes wave {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(20px);
-  }
+/* Animated background orbs */
+.roadmap-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.2), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.roadmap-section::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(118, 75, 162, 0.2), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 30px); }
 }
 
 .roadmap-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
 }
 
+/* ============ HEADER ============ */
 .roadmap-header {
   text-align: center;
   margin-bottom: 5rem;
+  animation: fadeInDown 0.8s ease;
 }
 
-.roadmap-title {
-  font-size: clamp(2.5rem, 6vw, 3.5rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, #e94cff, #ff6bcb, #f093fb);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.roadmap-subtitle {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.roadmap-timeline {
-  position: relative;
-}
-
-.timeline-line {
-  display: none;
-}
-
-.phases-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2.5rem;
-}
-
-.phase-card {
-  animation: floatUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: calc(var(--phase-index) * 0.15s);
-  opacity: 0;
-  perspective: 1000px;
-}
-
-@keyframes floatUp {
+@keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
@@ -100,158 +69,499 @@
   }
 }
 
-.phase-icon-wrapper {
+.roadmap-title {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 900;
+  background: linear-gradient(90deg, 
+    #ffd700 0%, 
+    #ffeb3b 25%, 
+    #667eea 50%, 
+    #764ba2 75%, 
+    #ffd700 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 768px) {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+.roadmap-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============ TIMELINE ============ */
+.roadmap-timeline {
   position: relative;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    #667eea 20%,
+    #764ba2 40%,
+    #f093fb 60%,
+    #667eea 80%,
+    transparent 100%);
+  z-index: 1;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+
+  @media (max-width: 1024px) {
+    height: 2px;
+    top: 55px;
+  }
+
+  @media (max-width: 768px) {
+    left: 40px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    top: 60px;
+    bottom: 0;
+  }
+}
+
+/* ============ PHASES GRID ============ */
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  position: relative;
+  z-index: 2;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-left: 80px;
+  }
+
+  @media (max-width: 480px) {
+    margin-left: 70px;
+    gap: 1.5rem;
+  }
+}
+
+/* ============ PHASE CARD ============ */
+.phase-card {
+  position: relative;
+  animation: cardSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--phase-index) * 0.15s);
+  opacity: 0;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============ PHASE ICON WRAPPER ============ */
+.phase-icon-wrapper {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 3;
+
+  @media (max-width: 768px) {
+    left: -40px;
+    transform: none;
+    top: 30px;
+  }
 }
 
 .phase-icon {
-  width: 90px;
-  height: 90px;
-  background: linear-gradient(135deg, #e94cff, #ff6bcb);
-  border-radius: 25px;
+  width: 85px;
+  height: 85px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
-  border: 3px solid #0f0f1e;
-  box-shadow: 0 10px 30px rgba(233, 76, 255, 0.3);
+  border: 4px solid #0f0f1e;
+  border-radius: 50%;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+  position: relative;
+  z-index: 4;
+
+  /* Dynamic colors for each phase */
+  .phase-card.phase-active & {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3), 0 0 30px rgba(16, 185, 129, 0.5);
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    background: linear-gradient(135deg, #8b5cf6 0%, #c084fc 100%);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3), 0 0 30px rgba(139, 92, 246, 0.4);
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.3), 0 0 30px rgba(245, 158, 11, 0.4);
+  }
+
+  .phase-card.phase-Planned & {
+    background: linear-gradient(135deg, #06b6d4 0%, #00d4ff 100%);
+    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.3), 0 0 30px rgba(6, 182, 212, 0.4);
+  }
 
   .phase-card:hover & {
-    transform: translateY(-15px) rotateZ(-5deg);
-    box-shadow: 0 20px 50px rgba(233, 76, 255, 0.5);
+    transform: scale(1.15) translateY(-5px);
+  }
+
+  @media (max-width: 768px) {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+    border-width: 3px;
   }
 }
 
 .phase-pulse {
-  display: none;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgba(16, 185, 129, 0.5);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulsing 2s ease-in-out infinite;
+
+  .phase-card.phase-active & {
+    border-color: rgba(16, 185, 129, 0.5);
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    border-color: rgba(245, 158, 11, 0.5);
+  }
+
+  .phase-card.phase-Planned & {
+    border-color: rgba(6, 182, 212, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    width: 84px;
+    height: 84px;
+  }
 }
 
+@keyframes pulsing {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ============ PHASE CONTENT ============ */
 .phase-content {
-  background: linear-gradient(135deg, 
-    rgba(233, 76, 255, 0.12) 0%, 
-    rgba(255, 107, 203, 0.05) 100%);
-  border: 2px solid rgba(233, 76, 255, 0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
-  padding: 2.5rem 2rem;
+  padding: 2rem;
+  margin-top: 50px;
   backdrop-filter: blur(10px);
-  transition: all 0.4s ease;
-  text-align: center;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+
+  /* Dynamic border colors */
+  .phase-card.phase-active & {
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .phase-card.phase-Planned & {
+    border-color: rgba(6, 182, 212, 0.3);
+  }
 
   .phase-card:hover & {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-top: 20px;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
     background: linear-gradient(135deg, 
-      rgba(233, 76, 255, 0.2) 0%, 
-      rgba(255, 107, 203, 0.1) 100%);
-    border-color: rgba(233, 76, 255, 0.5);
-    transform: translateY(-8px);
-    box-shadow: 0 20px 50px rgba(233, 76, 255, 0.15);
+      rgba(255, 255, 255, 0.05) 0%, 
+      transparent 100%);
+    border-radius: 20px;
+    pointer-events: none;
   }
 }
 
 .phase-header {
-  flex-direction: column;
-  gap: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
 }
 
 .phase-title {
-  font-size: 1.3rem;
-  font-weight: 900;
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+  font-weight: 800;
   color: white;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
+  letter-spacing: -0.01em;
+
+  .phase-card.phase-active & {
+    color: #34d399;
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    color: #c084fc;
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    color: #fbbf24;
+  }
+
+  .phase-card.phase-Planned & {
+    color: #00d4ff;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+}
+
+.phase-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  backdrop-filter: blur(10px);
+
+  .phase-card.phase-active & {
+    background: rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    border: 1.5px solid rgba(16, 185, 129, 0.5);
+    animation: badgeGlow 2s ease-in-out infinite;
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    background: rgba(139, 92, 246, 0.25);
+    color: #c084fc;
+    border: 1.5px solid rgba(139, 92, 246, 0.5);
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    background: rgba(245, 158, 11, 0.25);
+    color: #fbbf24;
+    border: 1.5px solid rgba(245, 158, 11, 0.5);
+  }
+
+  .phase-card.phase-Planned & {
+    background: rgba(6, 182, 212, 0.25);
+    color: #00d4ff;
+    border: 1.5px solid rgba(6, 182, 212, 0.5);
+  }
+}
+
+@keyframes badgeGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+  }
 }
 
 .phase-month {
   font-size: 0.85rem;
-  color: rgba(233, 76, 255, 0.9);
-  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin: 0;
-}
-
-.phase-badge {
-  padding: 0.6rem 1.2rem;
-  border-radius: 50px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0.75rem auto 0 auto;
-  display: inline-block;
-
-  &.phase-badge-active {
-    background: linear-gradient(135deg, #10b981, #34d399);
-    color: white;
-  }
-
-  &.phase-badge-upcoming {
-    background: linear-gradient(135deg, #f59e0b, #fbbf24);
-    color: #1f2937;
-  }
-
-  &.phase-badge-future {
-    background: linear-gradient(135deg, #e94cff, #ff6bcb);
-    color: white;
-  }
-}
-
-.phase-items {
-  text-align: left;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(233, 76, 255, 0.2);
-}
-
-.phase-item {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 0.75rem;
-  last-child: {
-    margin-bottom: 0;
-  }
-}
-
-.phase-connector {
   display: none;
 }
 
-.trust-box {
-  margin-top: 5rem;
-  padding: 3rem;
-  background: linear-gradient(135deg, 
-    rgba(16, 185, 129, 0.15) 0%, 
-    rgba(233, 76, 255, 0.1) 100%);
-  border: 2px solid rgba(233, 76, 255, 0.3);
-  border-radius: 20px;
-  text-align: center;
-  backdrop-filter: blur(10px);
-  animation: fadeIn 1s ease 0.6s both;
+/* ============ PHASE ITEMS ============ */
+.phase-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-@keyframes fadeIn {
+.phase-item {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  padding-left: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: 900;
+    font-size: 1rem;
+  }
+
+  .phase-card.phase-active & {
+    &::before {
+      color: #34d399;
+    }
+  }
+
+  .phase-card.phase-upcoming:nth-child(2) & {
+    &::before {
+      color: #c084fc;
+    }
+  }
+
+  .phase-card.phase-upcoming:nth-child(3) & {
+    &::before {
+      color: #fbbf24;
+    }
+  }
+
+  .phase-card.phase-Planned & {
+    &::before {
+      color: #00d4ff;
+    }
+  }
+
+  .phase-card:hover & {
+    color: white;
+    transform: translateX(5px);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding-left: 1.25rem;
+  }
+}
+
+/* ============ CONNECTOR ============ */
+.phase-connector {
+  position: absolute;
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.2) 0%, transparent 100%);
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+
+  .phase-card.phase-active ~ & {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.3) 0%, transparent 100%);
+  }
+
+  @media (max-width: 768px) {
+    left: -40px;
+    transform: none;
+  }
+}
+
+/* ============ TRUST BOX (commented out but ready) ============ */
+.trust-box {
+  display: none;
+  margin-top: 5rem;
+  padding: 3rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+  border-left: 5px solid #10b981;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  animation: slideUp 0.8s ease 0.6s both;
+}
+
+@keyframes slideUp {
   from {
     opacity: 0;
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .trust-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
 .trust-content h3 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 900;
-  color: #e94cff;
-  margin: 0 0 1rem 0;
+  color: #10b981;
+  margin: 0 0 0.75rem 0;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 
 .trust-content p {
@@ -259,12 +569,127 @@
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
   line-height: 1.7;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
 
   strong {
-    color: #f093fb;
+    color: #34d399;
     font-weight: 800;
+  }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1024px) {
+  .roadmap-section {
+    padding: 6rem 1.5rem;
+  }
+
+  .timeline-line {
+    height: 2px;
+  }
+
+  .phases-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .phase-card {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .roadmap-section {
+    padding: 3rem 1rem;
+  }
+
+  .roadmap-header {
+    margin-bottom: 3rem;
+  }
+
+  .roadmap-title {
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-line {
+    left: 40px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    top: 60px;
+    background: linear-gradient(180deg, 
+      #667eea 0%,
+      #764ba2 50%,
+      #667eea 100%);
+  }
+
+  .phases-grid {
+    grid-template-columns: 1fr;
+    margin-left: 80px;
+    gap: 2rem;
+  }
+
+  .phase-card {
+    margin-left: 0;
+  }
+
+  .phase-icon-wrapper {
+    left: -40px;
+    transform: none;
+  }
+
+  .phase-content {
+    padding: 1.5rem;
+    margin-top: 20px;
+  }
+
+  .phase-items {
+    gap: 0.6rem;
+  }
+
+  .phase-item {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .roadmap-section {
+    padding: 2rem 0.75rem;
+  }
+
+  .roadmap-title {
+    font-size: 2rem;
+  }
+
+  .roadmap-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .phases-grid {
+    margin-left: 70px;
+    gap: 1.5rem;
+  }
+
+  .timeline-line {
+    left: 30px;
+  }
+
+  .phase-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+    border-width: 2px;
+  }
+
+  .phase-content {
+    padding: 1.25rem;
+    margin-top: 15px;
+  }
+
+  .phase-title {
+    font-size: 1rem;
+  }
+
+  .phase-item {
+    font-size: 0.8rem;
+    padding-left: 1rem;
   }
 }

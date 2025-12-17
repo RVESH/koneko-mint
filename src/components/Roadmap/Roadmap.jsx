@@ -9,16 +9,11 @@ const Roadmap = () => {
       // month: 'Q4 2024',
       icon: '🚀',
       items: [
-        <ul>
-         <li> Launch of 12,000 unique NFTs</li> 
-         <li> Fully revealed artwork (no fake previews)</li>
-         <li> Fair & public mint on Optimism</li>
-         <li> Smart contract deployed & verified</li>
-         <li> Secure minting with no hidden functions</li>
-        </ul>
-   
-
-
+        'Launch of 12,000 unique NFTs',
+        'Fully revealed artwork (no fake previews)',
+        'Fair & public mint on Optimism',
+        'Smart contract deployed & verified',
+        'Secure minting with no hidden functions'
       ],
       status: 'active'
     },
@@ -26,43 +21,40 @@ const Roadmap = () => {
       id: 2,
       title: 'Community First',
       // month: 'Q1 2025',
-      icon: '👥',
+      icon: '🌱',
       items: [
-        <ul>
-          <li>Exclusive holder Discord roles</li> 
-        <li> Weekly community events</li>
-        <li> Holder airdrops & rewards</li>
-        <li> Rarity tools & floor tracking</li>
-
-        </ul>
+        'Exclusive holder Discord roles',
+        'Holder-only announcements',
+        'Transparent updates & progress sharing',
+        'Social & community engagement events'
       ],
       status: 'upcoming'
     },
     {
       id: 3,
-      title: 'Expand & Collaborate',
-      month: 'Q2 2025',
-      icon: '🤝',
+      title: 'Holder Utility',
+      // month: 'Q2 2025',
+      icon: '🎁',
       items: [
-        '🔲 Cross-project collaborations',
-        '🔲 Koneko mini-games beta',
-        '🔲 Staking & points system',
-        '🔲 Merch & physical items'
+        'Exclusive access for NFT holders',
+        'Future drops or rewards for holders',
+        'Random mint / rarity-based features',
+        'Access to upcoming features & experiments'
       ],
       status: 'upcoming'
     },
     {
       id: 4,
       title: 'Long-term Vision',
-      month: 'Q3+ 2025',
-      icon: '🌟',
+      // month: 'Q3+ 2025',
+      icon: '🔮',
       items: [
-        '🔲 Community governance voting',
-        '🔲 Interactive NFT features',
-        '🔲 IRL meet-ups & events',
-        '🔲 Sustained ecosystem growth'
+        'Sustainable ecosystem development',
+        'Partnerships & collaborations (when aligned)',
+        'Marketplace & platform improvements',
+        'Continuous value creation for holders'
       ],
-      status: 'future'
+      status: 'Planned'
     }
   ];
 
@@ -71,7 +63,7 @@ const Roadmap = () => {
       <div className="roadmap-container">
         {/* Header */}
         <div className="roadmap-header">
-          <h2 className="roadmap-title">🗺️ Our Journey</h2>
+          <h2 className="roadmap-title"> Our Journey</h2>
           <p className="roadmap-subtitle">
             Transparent, realistic milestones built with our community
           </p>
@@ -127,7 +119,7 @@ const Roadmap = () => {
         </div>
 
         {/* Trust Statement */}
-        <div className="trust-box">
+        {/* <div className="trust-box">
           <div className="trust-icon">🔒</div>
           <div className="trust-content">
             <h3>Why We're Transparent</h3>
@@ -136,7 +128,7 @@ const Roadmap = () => {
               <strong> We only add to this roadmap what we'll actually deliver.</strong>
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

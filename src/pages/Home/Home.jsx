@@ -148,35 +148,37 @@ const Home = () => {
         </div>
 <Roadmap/>
         <div className="container">
-          <h2 className="stats-title">Our Impact</h2>
+          <h2 className="stats-title">Project Highlights</h2>
           <div className="stats-grid-premium">
-            <div className="stat-card-premium">
-              <div className="stat-icon stat-icon-1">📊</div>
-              <div className="stat-number-premium">10K+</div>
-              <div className="stat-label-premium">NFTs Minted</div>
-              <p className="stat-desc">Growing every day</p>
-            </div>
+          <div className="stat-card-premium">
+            <div className="stat-icon stat-icon-1">🔥</div>
+            <div className="stat-number-premium">Live</div>
+            <div className="stat-label-premium">Mint Status</div>
+            <p className="stat-desc">Public mint open</p>
+          </div>
 
-            <div className="stat-card-premium">
-              <div className="stat-icon stat-icon-2">👥</div>
-              <div className="stat-number-premium">5K+</div>
-              <div className="stat-label-premium">Happy Collectors</div>
-              <p className="stat-desc">Community driven</p>
-            </div>
+          <div className="stat-card-premium">
+            <div className="stat-icon stat-icon-2">👛</div>
+            <div className="stat-number-premium">Wallet</div>
+            <div className="stat-label-premium">Mint Access</div>
+            <p className="stat-desc">Non-custodial</p>
+          </div>
 
-            <div className="stat-card-premium">
-              <div className="stat-icon stat-icon-3">🎨</div>
-              <div className="stat-number-premium">500+</div>
-              <div className="stat-label-premium">Unique Artists</div>
-              <p className="stat-desc">From around world</p>
-            </div>
+          <div className="stat-card-premium">
+            <div className="stat-icon stat-icon-3">🖼️</div>
+            <div className="stat-number-premium">12K</div>
+            <div className="stat-label-premium">Unique NFTs</div>
+            <p className="stat-desc">Fully revealed</p>
+          </div>
 
-            <div className="stat-card-premium">
-              <div className="stat-icon stat-icon-4">✅</div>
-              <div className="stat-number-premium">99%</div>
-              <div className="stat-label-premium">Success Rate</div>
-              <p className="stat-desc">Trust & security</p>
-            </div>
+          <div className="stat-card-premium">
+            <div className="stat-icon stat-icon-4">🧠</div>
+            <div className="stat-number-premium">Community</div>
+            <div className="stat-label-premium">Driven</div>
+            <p className="stat-desc">Long-term focus</p>
+          </div>
+
+
           </div>
         </div>
       </section>
