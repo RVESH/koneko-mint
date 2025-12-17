@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Home.scss";
 import Features from "./components/Features";
 import About from "./components/About";
-import CTA from "./components/CTA";
+import CTA from "./components/AnimatedNFT/cta/CTA.jsx";
 import NFTSlider from "./NFTSlider/slideBar";
 import NFTPopup from "../../components/NFTPopup/NFTPopup";
 import AnimatedNFT from "./components/AnimatedNFT/animatedNFT";

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
+import './CTA.scss';
 const CTA = () => {
   const navigate = useNavigate();
 
