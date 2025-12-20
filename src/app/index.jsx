@@ -1,6 +1,7 @@
 // src/app/index.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, BrowserRouter, useLocation } from 'react-router-dom';
+import Preloader from "../components/Preloader/Preloader";
 
 import { WalletProvider } from "../context/WalletContext";
 import { ContractProvider } from '../context/ContractContext';
@@ -16,6 +17,23 @@ function ScrollToTop() {
 }
 
 function App() {
+
+const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initApp = async () => {
+      // Simulate wallet + contract loading
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setLoading(false);
+    };
+
+    initApp();
+  }, []);
+
+  if (loading) return <Preloader />;
+
+
+
   return (
     <WalletProvider>
       <BrowserRouter>
