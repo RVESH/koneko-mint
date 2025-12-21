@@ -5,9 +5,9 @@ const FooterLinks = () => (
   <nav className="footer-nav" aria-label="Footer navigation">
     <ul className="footer-links">
       <li>
-        <a 
-          href="/terms.pdf" 
-          target="_blank" 
+        <a
+          href="/terms.pdf"
+          target="_blank"
           rel="noopener noreferrer"
           className="footer-link-item"
           data-label="Terms"
@@ -15,11 +15,11 @@ const FooterLinks = () => (
           <span className="link-icon">
             <i className="fa-solid fa-file-contract"></i>
           </span>
-          <span className="link-text">Koneko&apos;s Terms</span>
+          <span className="link-text">Terms & Conditions</span>
         </a>
       </li>
       <li>
-        <a 
+        <a
           href="/privacy"
           className="footer-link-item"
           data-label="Privacy"
@@ -27,11 +27,11 @@ const FooterLinks = () => (
           <span className="link-icon">
             <i className="fa-solid fa-shield"></i>
           </span>
-          <span className="link-text">Privacy</span>
+          <span className="link-text">Privacy Policy</span>
         </a>
       </li>
       <li>
-        <a 
+        <a
           href="/about"
           className="footer-link-item"
           data-label="About"
@@ -39,11 +39,11 @@ const FooterLinks = () => (
           <span className="link-icon">
             <i className="fa-solid fa-circle-info"></i>
           </span>
-          <span className="link-text">About</span>
+          <span className="link-text">About Us</span>
         </a>
       </li>
       <li>
-        <a 
+        <a
           href="/faq"
           className="footer-link-item"
           data-label="FAQ"
