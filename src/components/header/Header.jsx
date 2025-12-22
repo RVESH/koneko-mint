@@ -2,19 +2,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useWalletContext } from '../../context/WalletContext';
-import WalletButton from '../WalletButton/WalletButton'; // Direct import
+import WalletButton from '../WalletButton/WalletButton';
 import './Header.scss';
-
-
-
-
-// Add this in your Header component temporarily:
-// <TestWalletPopup />
-
-
-
-
-
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,11 +22,13 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
+        {/* Logo */}
         <Link to="/home" className="header-logo">
           <span className="logo-icon">🎨</span>
           <span className="logo-text">Koneko</span>
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="header-nav desktop-nav">
           {navItems.map(({ path, label }) => (
             <Link
@@ -50,34 +41,38 @@ const Header = () => {
           ))}
         </nav>
 
+        {/* Actions */}
         <div className="header-actions">
           <WalletButton />
 
+          {/* Mobile Menu Toggle */}
           <button
-            className="mobile-menu-toggle"
+            className={`mobile-menu-toggle ${isMobileMenuOpen ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
           >
             <span></span>
             <span></span>
             <span></span>
           </button>
         </div>
-
-        {isMobileMenuOpen && (
-          <nav className="header-nav mobile-nav">
-            {navItems.map(({ path, label }) => (
-              <Link
-                key={path}
-                to={path}
-                className={`nav-link ${isActive(path) ? 'active' : ''}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-        )}
       </div>
+
+      {/* Mobile Navigation */}
+      {isMobileMenuOpen && (
+        <nav className="header-nav mobile-nav">
+          {navItems.map(({ path, label }) => (
+            <Link
+              key={path}
+              to={path}
+              className={`nav-link ${isActive(path) ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 };

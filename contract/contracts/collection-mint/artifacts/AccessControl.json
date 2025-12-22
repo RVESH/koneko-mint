@@ -7283,7 +7283,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.10",
-  "updatedAt": "2025-12-07T10:16:24.942Z",
+  "updatedAt": "2025-12-22T16:03:56.649Z",
   "devdoc": {
     "events": {
       "RoleAdminChanged(bytes32,bytes32,bytes32)": {
