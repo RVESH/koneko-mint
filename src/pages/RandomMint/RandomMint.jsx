@@ -15,8 +15,9 @@ const RandomMint = () => {
   const [metadata, setMetadata] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // ✅ FIXED: INITIALIZE ON COMPONENT MOUNT + WHEN WALLET CONNECTS
+  // ✅ INITIALIZE ON COMPONENT MOUNT + WHEN WALLET CONNECTS
   useEffect(() => {
     const initAndLoad = async () => {
       // Initialize contract service if wallet is connected
@@ -63,14 +64,15 @@ const RandomMint = () => {
     }
   }
 
-  // ✅ FIXED: HANDLE MINT - USE CORRECT FUNCTIONS
+  // ✅ HANDLE MINT - USE CORRECT FUNCTIONS
   const handleMint = async (qty) => {
     try {
       setError("");
+      setSuccess("");
       setLoading(true);
 
       if (!isConnected) {
-        setError("❌ Please connect wallet first!");
+        setError("❌ Please connect your wallet first!");
         return;
       }
 
@@ -92,11 +94,14 @@ const RandomMint = () => {
       console.log("✅ Mint successful!");
       console.log("Tx Hash:", receipt.hash);
 
+      // Set success message
+      setSuccess(`✅ Successfully minted ${qty} NFT${qty > 1 ? "s" : ""}!`);
+
       // Reload contract data
       await loadContractData();
 
-      // Show success
-      alert(`✅ Successfully minted ${qty} NFTs!\n\nTx: ${receipt.hash}`);
+      // Clear success after 5 seconds
+      setTimeout(() => setSuccess(""), 5000);
     } catch (e) {
       console.error("❌ Mint failed:", e.message);
       setError(`❌ Minting failed! ${e.message}`);
@@ -107,8 +112,35 @@ const RandomMint = () => {
 
   return (
     <div className="random-mint">
-      {error && <div className="error-banner">⚠️ {error}</div>}
+      {/* Error Banner */}
+      {error && (
+        <div className="alert alert--error">
+          <span className="alert__icon">⚠️</span>
+          <span className="alert__text">{error}</span>
+          <button
+            className="alert__close"
+            onClick={() => setError("")}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
+      {/* Success Banner */}
+      {success && (
+        <div className="alert alert--success">
+          <span className="alert__icon">✓</span>
+          <span className="alert__text">{success}</span>
+          <button
+            className="alert__close"
+            onClick={() => setSuccess("")}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Main Content */}
       <BulkMintSelector
         isConnected={isConnected}
         onMintClick={handleMint}

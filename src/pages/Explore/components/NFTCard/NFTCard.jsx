@@ -50,7 +50,7 @@ const NFTCard = ({ nft, onZoomClick }) => {
         )}
       </div>
 
-      <div className="nft-info">
+      <div className="nft-infom">
         <h3 className="nft-title">{nft.name || `NFT #${nft.id}`}</h3>
         <div className="nft-details">
           <p className="nft-id">TOKEN ID: {nft.id}</p>

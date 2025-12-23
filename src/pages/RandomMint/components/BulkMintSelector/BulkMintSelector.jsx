@@ -1,184 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import './BulkMintSelector.scss';
 
 const BulkMintSelector = ({
-  isConnected,           // ✅ FROM PARENT (RandomMint)
-  isLoading,             // ✅ FROM PARENT
-  nftPrice = 0,          // ✅ FROM PARENT
-  previewImage,          // ✅ FROM PARENT
-  availableCount = 12000, // ✅ FROM PARENT
-  onQuantityChange,      // ✅ FROM PARENT
-  onMintClick,           // ✅ FROM PARENT
+  isConnected,
+  isLoading,
+  nftPrice = 0,
+  previewImage,
+  availableCount = 12000,
+  onQuantityChange,
+  onMintClick,
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const [showPriceAnimation, setShowPriceAnimation] = useState(false);
+  const [animate, setAnimate] = useState(false);
 
-  const MIN_QUANTITY = 1;
-  const MAX_QUANTITY = Math.min(10, availableCount || 0);
-  const totalPrice = (quantity * nftPrice).toFixed(6);
+  const MAX_QTY = Math.min(10, availableCount || 0);
+  const total = (quantity * nftPrice).toFixed(6);
 
-  // Animate price change
   useEffect(() => {
-    setShowPriceAnimation(true);
-    const timer = setTimeout(() => setShowPriceAnimation(false), 300);
+    setAnimate(true);
+    const timer = setTimeout(() => setAnimate(false), 300);
     return () => clearTimeout(timer);
   }, [quantity, nftPrice]);
 
-  // Update quantity
-  const handleQuantityChange = (newQuantity) => {
-    if (newQuantity >= MIN_QUANTITY && newQuantity <= MAX_QUANTITY) {
-      setQuantity(newQuantity);
-      onQuantityChange && onQuantityChange(newQuantity);
+  const handleQty = (n) => {
+    if (n >= 1 && n <= MAX_QTY) {
+      setQuantity(n);
+      onQuantityChange?.(n);
     }
   };
 
-  const quickSelectOptions = [1, 3, 5, 10].filter(q => q <= MAX_QUANTITY);
-
-  // ✅ HANDLE MINT CLICK
-  const handleMintClick = async () => {
-    if (!isConnected) {
-      alert('❌ Please connect wallet first!');
-      return;
-    }
-
+  const handleMint = async () => {
+    if (!isConnected) return alert('Connect wallet first!');
     try {
-      console.log(`🚀 Minting ${quantity}...`);
-      await onMintClick(quantity); // ✅ CALL PARENT FUNCTION
-      setQuantity(1); // Reset
+      await onMintClick(quantity);
+      setQuantity(1);
     } catch (e) {
-      console.error('❌ Mint error:', e.message);
       alert(`Error: ${e.message}`);
     }
   };
 
-  const getMintButtonContent = () => {
-    if (!isConnected) return '🔗 Connect Wallet';
-    if (isLoading) return (
-      <div className="loading-state">
-        <div className="spinner"></div>
-        <span>Minting...</span>
-      </div>
-    );
-    if (availableCount === 0) return '❌ Sold Out';
-    return `🎲 Mint ${quantity} NFT${quantity > 1 ? 's' : ''}`;
-  };
-
-  const isMintDisabled = !isConnected || isLoading || availableCount === 0;
+  const btnText = !isConnected 
+    ? '🔗 Connect Wallet'
+    : isLoading 
+    ? '⏳ Minting...'
+    : availableCount === 0 
+    ? '❌ Sold Out'
+    : `🎲 Mint ${quantity}`;
 
   return (
-    <div className="bulk-mint-selector">
-      {/* PREVIEW SECTION */}
-      <div className="preview-section">
-        <div className="mystery-box">
+    <div className="mint-card">
+      {/* Header */}
+      <div className="mint-header">
+        <div className="preview">
           {previewImage ? (
-            <img src={previewImage} alt="Mystery NFT" />
+            <img src={previewImage} alt="NFT" />
           ) : (
-            <div className="mystery-placeholder">
-              <span className="mystery-icon">❓</span>
-            </div>
+            <div className="empty">🎲</div>
           )}
         </div>
-        <div className="mystery-info">
-          <h3>Random NFTs</h3>
-          <p>Mint random NFTs on blockchain — limited collection</p>
+        <div className="info">
+          <h2>Random Koneko</h2>
+          <p>Limited • Unique • Secure</p>
+          <div className="stats">
+            <span>{availableCount} Available</span>
+            <span>{nftPrice.toFixed(4)} ETH</span>
+          </div>
         </div>
       </div>
 
-      {/* CONTROLS SECTION */}
-      <div className="controls-section">
-        {/* Quantity */}
-        <div className="quantity-area">
-          <div className="quantity-header">
-            <span className="dice-icon">🎲</span>
-            <span>Select Quantity</span>
+      {/* Controls */}
+      <div className="controls">
+        <div className="control-box">
+          <label>Quantity</label>
+          <div className="qty-row">
+            <button onClick={() => handleQty(quantity - 1)} disabled={quantity === 1}>−</button>
+            <div className="qty-num">{quantity}</div>
+            <button onClick={() => handleQty(quantity + 1)} disabled={quantity === MAX_QTY}>+</button>
           </div>
-
-          <div className="quantity-controls">
-            <button
-              className="qty-btn decrease"
-              onClick={() => handleQuantityChange(quantity - 1)}
-              disabled={quantity <= MIN_QUANTITY}
-            >
-              −
-            </button>
-
-            <div className="qty-display">
-              <div className="qty-number">{quantity}</div>
-              <div className="qty-label">NFTs</div>
-            </div>
-
-            <button
-              className="qty-btn increase"
-              onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={quantity >= MAX_QUANTITY}
-            >
-              +
-            </button>
-          </div>
-
-          <div className="quick-select">
-            {quickSelectOptions.map(option => (
+          <div className="quick">
+            {[1, 3, 5, 10].filter(q => q <= MAX_QTY).map(q => (
               <button
-                key={option}
-                className={`quick-btn ${quantity === option ? 'active' : ''}`}
-                onClick={() => handleQuantityChange(option)}
+                key={q}
+                className={quantity === q ? 'active' : ''}
+                onClick={() => handleQty(q)}
               >
-                {option}
+                {q}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Price */}
-        <div className="price-area">
-          <div className="price-label">Total Price</div>
-          <div className={`price-amount ${showPriceAnimation ? 'animate' : ''}`}>
-            {totalPrice} ETH
-          </div>
-          <div className="price-calculation">
-            {nftPrice.toFixed(6)} × {quantity}
-          </div>
+        <div className="control-box">
+          <label>Total Price</label>
+          <div className={`price ${animate ? 'pulse' : ''}`}>{total} ETH</div>
+          <div className="breakdown">{nftPrice.toFixed(6)} × {quantity}</div>
         </div>
+      </div>
 
-        {/* Mint Button */}
-        <div className="action-area">
-          <button
-            className={`mint-btn ${!isConnected ? 'connect-btn' : 'primary-btn'}`}
-            onClick={handleMintClick}
-            disabled={isMintDisabled}
-          >
-            {getMintButtonContent()}
-          </button>
-        </div>
+      {/* Mint Button */}
+      <button
+        className={`mint-btn ${!isConnected ? 'connect' : ''}`}
+        onClick={handleMint}
+        disabled={!isConnected || isLoading || availableCount === 0}
+      >
+        {btnText}
+      </button>
+
+      {/* Status */}
+      <div className={`status ${
+        !isConnected ? 'warn' : availableCount === 0 ? 'danger' : 'ok'
+      }`}>
+        {!isConnected ? '⚠️ Connect wallet' : availableCount === 0 ? '❌ Sold out' : '✅ Ready'}
       </div>
 
       {/* Features */}
-      <div className="features-row">
-        <div className="feature-item">
-          <span className="feature-icon">⚡</span> On-Chain
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon">💎</span> Unique
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon">🎨</span> Random
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon">🔒</span> Secure
-        </div>
-      </div>
-
-      {/* Availability */}
-      <div className="status-info">
-        <div className="info-item">
-          <span>Available: {availableCount}</span>
-        </div>
-        {!isConnected && (
-          <div className="info-item warning">
-            <span>⚠️ Please connect your wallet to mint</span>
+      <div className="features">
+        {[
+          { icon: '⚡', name: 'Instant' },
+          { icon: '💎', name: 'Unique' },
+          { icon: '🎨', name: 'Random' },
+          { icon: '🔒', name: 'Secure' },
+        ].map(f => (
+          <div key={f.name} className="feat">
+            <div>{f.icon}</div>
+            <div>{f.name}</div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
