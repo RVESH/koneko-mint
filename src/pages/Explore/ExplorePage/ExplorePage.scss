@@ -253,76 +253,63 @@
 }
 
 /* ========== NFT GRID ========== */
-/* 🎨 NFT GRID - PERFECT FOR ALL SIZES + MOBILE VERTICAL */
-/* Desktop → Mobile → One-by-one on small phones */
-
+/* ========== NFT GRID (FIXED & STABLE) ========== */
 .nft-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  flex: 1;
-  margin-bottom: 2.5rem;
   width: 100%;
+  margin-bottom: 2.5rem;
+  align-items: stretch;
+}
 
-  /* ========== DESKTOP (1400px+) ========== */
-  @media (min-width: 1400px) {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2.5rem;
-  }
-
-  /* ========== LAPTOP (1024px - 1399px) ========== */
-  @media (max-width: 1399px) and (min-width: 1024px) {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-  }
-
-  /* ========== TABLET LANDSCAPE (900px - 1023px) ========== */
-  @media (max-width: 1023px) and (min-width: 900px) {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+/* Large Laptop */
+@media (max-width: 1400px) {
+  .nft-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.75rem;
   }
+}
 
-  /* ========== TABLET PORTRAIT (769px - 899px) ========== */
-  @media (max-width: 899px) and (min-width: 769px) {
-    grid-template-columns: repeat(3, 1fr);
+/* Tablet Landscape */
+@media (max-width: 1024px) {
+  .nft-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
   }
+}
 
-  /* ========== MOBILE LARGE (481px - 768px) ========== */
-  @media (max-width: 768px) and (min-width: 481px) {
-    grid-template-columns: repeat(2, 1fr);
+/* Tablet Portrait */
+@media (max-width: 900px) {
+  .nft-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.25rem;
   }
+}
 
-  /* ========== MOBILE MEDIUM (361px - 480px) ========== */
-  @media (max-width: 480px) and (min-width: 361px) {
-    grid-template-columns: repeat(2, 1fr);
+/* Mobile Large */
+@media (max-width: 768px) {
+  .nft-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1rem;
   }
+}
 
-  /* ========== MOBILE SMALL - ONE BY ONE (0px - 360px) ========== */
-  @media (max-width: 360px) {
-    grid-template-columns: 1fr;
+/* Mobile Medium */
+@media (max-width: 480px) {
+  .nft-grid {
+    grid-template-columns: repeat(1, 1fr);
     gap: 0.875rem;
   }
 }
 
-/* ========== OPTIONAL: CARD ADJUSTMENTS FOR MOBILE ========== */
-@media (max-width: 480px) {
-  .nft-grid .nft-card {
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 360px) {
-  .nft-grid .nft-card {
-    width: 100%;
-    
-    /* Slightly larger cards on mobile when showing one-by-one */
-    .nft-image-wrapper {
-      aspect-ratio: 1 / 1.1;
-    }
-  }
-}
+// /* Mobile Small */
+// @media (max-width: 360px) {
+//   .nft-grid {
+//     grid-template-columns: 1fr;
+//     gap: 0.75rem;
+//   }
+// }
 
 
 /* ========== NO RESULTS ========== */
