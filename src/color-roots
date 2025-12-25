@@ -1,0 +1,21 @@
+:root {
+  /* Primary */
+  --color-primary: #667eea;
+  --color-accent: #f093fb;
+  
+  /* Backgrounds */
+  --color-bg: #1a1a3e;
+  --color-bg-dark: #0f0f1e;
+  
+  /* Text */
+  --color-text: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  
+  /* Status */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+}

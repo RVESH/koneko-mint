@@ -1,127 +1,423 @@
+/* 🎨 ULTRA RESPONSIVE EXPLORE PAGE - ALL SIZES PERFECT */
+/* Desktop → Tablet → Mobile → Small Phone - Everything covered! */
+
+:root {
+  --primary: #667eea;
+  --accent: #f093fb;
+  --dark: #0a0e27;
+  --card: rgba(15, 23, 42, 0.8);
+  --border: rgba(148, 163, 184, 0.2);
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --success: #10b981;
+  --warning: #f59e0b;
+}
+
+/* BASE LAYOUT - Desktop First */
 .explore-page {
   display: flex;
   gap: 2rem;
-  padding: 90px 0 0 0;
-  background: #f5faff;
+  padding: 90px 2.5rem 2.5rem 2.5rem;
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a3e 100%);
+  min-height: 100vh;
+  position: relative;
   box-sizing: border-box;
-  position: relative; /* needed for sidebar-panel positioning */
+}
 
-  .filter-btn {
-    background: #1a73e8;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .sidebar-panel {
-    position: fixed;
-    top: 74px;
-    left: -590px; /* hidden by default */
-    width: 290px;
-    height: 100%;
-    background: #fff;
-    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
-    border-radius: 0 12px 12px 0;
-    padding: 1.5rem;
-    transition: left 0.3s ease;
-    z-index: 1000;
-
-    &.open {
-      left: 3px; /* slide in */
-    }
-
-    .close-sidebar {
-      position: absolute;
-      top: 12px;
-      right: 10px;
-      background: transparent;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-  }
-
-  .nft-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .controls-row {
-    display: flex;
-    gap: 90px;
-    align-items: center;
-    margin-bottom: 1rem;
-
-    .search-container {
-        flex: 1;
-        max-width: 120px;
-
-        .search-input {
-           width: 100%;
-         }
-
-      input {
-        width: 100px;
-        padding: 0.6rem 2.5rem 0.6rem 1rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-      }
-
-    }
-  }
-
-  .nft-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
-  }
-
-  .pagination-wrapper {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
+/* DESKTOP (1400px+) */
+@media (min-width: 1400px) {
+  .explore-page {
+    padding: 90px 4rem 4rem 4rem;
+    gap: 3rem;
   }
 }
 
-/* Media Query for very small screens (max-width: 150px) */
-@media (max-width: 150px) {
+/* LAPTOP (1024px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1024px) {
   .explore-page {
-    padding: 60px 0.25rem 0 0.25rem;
+    padding: 90px 2rem 2rem 2rem;
+    gap: 2rem;
+  }
+}
+
+/* TABLET LANDSCAPE (900px - 1023px) */
+@media (max-width: 1023px) and (min-width: 900px) {
+  .explore-page {
+    padding: 85px 1.5rem 1.5rem 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+/* TABLET PORTRAIT (769px - 899px) */
+@media (max-width: 899px) and (min-width: 769px) {
+  .explore-page {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 80px 1.25rem 1.25rem 1.25rem;
+  }
+}
+
+/* MOBILE LARGE (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .explore-page {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 75px 1rem 1rem 1rem;
+  }
+}
+
+/* MOBILE MEDIUM (361px - 480px) */
+@media (max-width: 480px) and (min-width: 361px) {
+  .explore-page {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 70px 0.75rem 0.75rem 0.75rem;
+  }
+}
+
+/* MOBILE SMALL (0px - 360px) */
+@media (max-width: 360px) {
+  .explore-page {
+    flex-direction: column;
     gap: 0.5rem;
+    padding: 65px 0.5rem 0.5rem 0.5rem;
+  }
+}
 
-    .sidebar-panel {
-      width: 140px;
-      left: -145px;
-      padding: 0.5rem;
+/* ========== SIDEBAR OVERLAY ========== */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+}
 
-      &.open {
-        left: 2px;
-      }
+/* ========== SIDEBAR PANEL ========== */
+.sidebar-panel {
+  /* Desktop */
+  position: fixed;
+  top: 74px;
+  left: -350px;
+  width: 320px;
+  height: calc(100vh - 74px);
+  background: linear-gradient(135deg, var(--card) 0%, rgba(15,23,42,0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 0 20px 20px 0;
+  padding: 2rem;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  border-right: 1px solid var(--border);
 
-      .close-sidebar {
-        font-size: 1rem;
-        top: 5px;
-        right: 5px;
-      }
+  &.open {
+    left: 0;
+  }
+
+  /* Tablet Landscape */
+  @media (max-width: 1023px) and (min-width: 900px) {
+    width: 300px;
+    left: -300px;
+    padding: 1.75rem;
+  }
+
+  /* Tablet Portrait */
+  @media (max-width: 899px) and (min-width: 769px) {
+    width: 280px;
+    left: -280px;
+    padding: 1.5rem;
+  }
+
+  /* Mobile Large */
+  @media (max-width: 768px) and (min-width: 481px) {
+    width: 85vw;
+    left: -85vw;
+    padding: 1.25rem;
+  }
+
+  /* Mobile Medium */
+  @media (max-width: 480px) and (min-width: 361px) {
+    width: 90vw;
+    left: -90vw;
+    padding: 1rem;
+    top: 70px;
+    height: calc(100vh - 70px);
+  }
+
+  /* Mobile Small */
+  @media (max-width: 360px) {
+    width: 95vw;
+    left: -95vw;
+    padding: 0.875rem;
+    top: 65px;
+    height: calc(100vh - 65px);
+  }
+
+  .close-sidebar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(90deg);
     }
 
-    .nft-section {
-      width: 100%;
+    /* Smaller screens */
+    @media (max-width: 480px) {
+      width: 36px;
+      height: 36px;
+      font-size: 1.2rem;
+      top: 0.75rem;
+      right: 0.75rem;
+    }
+  }
+}
+
+/* ========== MAIN CONTENT ========== */
+.nft-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ========== CONTROLS ROW ========== */
+.controls-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+
+  .filter-btn {
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(240,147,251,0.4);
+    }
+  }
+
+  /* Tablet & Mobile */
+  @media (max-width: 1023px) {
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    .filter-btn { width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    padding: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* ========== NFT GRID ========== */
+/* 🎨 NFT GRID - PERFECT FOR ALL SIZES + MOBILE VERTICAL */
+/* Desktop → Mobile → One-by-one on small phones */
+
+.nft-grid {
+  display: grid;
+  gap: 2rem;
+  flex: 1;
+  margin-bottom: 2.5rem;
+  width: 100%;
+
+  /* ========== DESKTOP (1400px+) ========== */
+  @media (min-width: 1400px) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+  }
+
+  /* ========== LAPTOP (1024px - 1399px) ========== */
+  @media (max-width: 1399px) and (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  /* ========== TABLET LANDSCAPE (900px - 1023px) ========== */
+  @media (max-width: 1023px) and (min-width: 900px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.75rem;
+  }
+
+  /* ========== TABLET PORTRAIT (769px - 899px) ========== */
+  @media (max-width: 899px) and (min-width: 769px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* ========== MOBILE LARGE (481px - 768px) ========== */
+  @media (max-width: 768px) and (min-width: 481px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  /* ========== MOBILE MEDIUM (361px - 480px) ========== */
+  @media (max-width: 480px) and (min-width: 361px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* ========== MOBILE SMALL - ONE BY ONE (0px - 360px) ========== */
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+}
+
+/* ========== OPTIONAL: CARD ADJUSTMENTS FOR MOBILE ========== */
+@media (max-width: 480px) {
+  .nft-grid .nft-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .nft-grid .nft-card {
+    width: 100%;
+    
+    /* Slightly larger cards on mobile when showing one-by-one */
+    .nft-image-wrapper {
+      aspect-ratio: 1 / 1.1;
+    }
+  }
+}
+
+
+/* ========== NO RESULTS ========== */
+.no-results {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(255,255,255,0.02);
+  border: 2px dashed var(--border);
+  border-radius: 20px;
+
+  .no-results-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+
+    @media (max-width: 480px) {
+      font-size: 3.5rem;
     }
 
+    @media (max-width: 360px) {
+      font-size: 3rem;
+    }
+  }
 
+  h3 {
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
 
-    .nft-grid {
-      grid-template-columns: 1fr;
-      gap: 8px;
+    @media (max-width: 480px) {
+      font-size: 1.3rem;
     }
 
-    .pagination-wrapper {
-      margin-top: 1rem;
+    @media (max-width: 360px) {
+      font-size: 1.2rem;
     }
+  }
+
+  p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 1rem;
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 3rem 1.5rem;
+  }
+
+  @media (max-width: 360px) {
+    padding: 2.5rem 1rem;
+  }
+}
+
+/* ========== PAGINATION CONTAINER ========== */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0 0;
+  border-top: 1px solid var(--border);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 0 0 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.25rem 0 0 0;
+  }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+  * { 
+    animation: none !important; 
+    transition: none !important; 
+  }
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .explore-page {
+    background: white !important;
+    padding: 1rem !important;
+  }
+  
+  .sidebar-panel,
+  .sidebar-overlay {
+    display: none !important;
   }
 }
