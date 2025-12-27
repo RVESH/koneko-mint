@@ -291,6 +291,7 @@
   box-shadow: 0 6px 20px rgba(240, 147, 251, 0.3);
   z-index: 2;
   backdrop-filter: blur(10px);
+
   &:hover {
     transform: scale(1.2) rotate(20deg);
     box-shadow: 0 8px 30px rgba(240, 147, 251, 0.5);
@@ -307,8 +308,6 @@
     font-size: 1.4rem;
     bottom: 1.2rem;
     right: 1.2rem;
-      margin-top: 30%;
-
   }
 
   @media (max-width: 480px) {
