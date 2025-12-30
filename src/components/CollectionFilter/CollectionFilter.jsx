@@ -64,4 +64,5 @@ const CollectionFilter = ({ activeFilter, onFilterChange, counts }) => {
   );
 };
 
+
 export default CollectionFilter;
