@@ -58,6 +58,7 @@ const Roadmap = () => {
     }
   ];
 
+  
   return (
     <section className="roadmap-section">
       <div className="roadmap-container">
