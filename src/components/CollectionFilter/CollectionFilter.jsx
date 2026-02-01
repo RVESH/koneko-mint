@@ -54,6 +54,7 @@ const CollectionFilter = ({ activeFilter, onFilterChange, counts }) => {
               <p className="card-description">{option.description}</p>
             </div>
 
+
             <div className="card-indicator">
               <div className="indicator-dot"></div>
             </div>
