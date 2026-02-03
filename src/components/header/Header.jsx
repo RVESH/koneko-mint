@@ -30,7 +30,6 @@ const Header = () => {
 
 
 
-
         <nav className={`header-nav ${isMobileMenuOpen ? 'open' : ''}`}>
           {navItems.map(({ path, label }) => (
             <Link
