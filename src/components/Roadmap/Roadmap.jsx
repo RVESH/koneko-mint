@@ -2,6 +2,7 @@ import React from 'react';
 import './Roadmap.scss';
 
 const Roadmap = () => {
+  
   const phases = [
     {
       id: 1,
