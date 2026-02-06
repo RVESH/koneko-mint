@@ -28,8 +28,6 @@ const Header = () => {
           <span className="logo-text">Koneko</span>
         </Link>
 
-
-
         <nav className={`header-nav ${isMobileMenuOpen ? 'open' : ''}`}>
           {navItems.map(({ path, label }) => (
             <Link
