@@ -8,10 +8,6 @@ import RandomMint from './RandomMint/RandomMint.jsx';
 
 
 
-
-
-
-
 export{
   MintPage,
   ExplorePage,
