@@ -4,10 +4,6 @@ import Home from './Home/Home.jsx';
 import ProfilePage from './profile/index.jsx';
 import RandomMint from './RandomMint/RandomMint.jsx';
 
-
-
-
-
 export{
   MintPage,
   ExplorePage,
