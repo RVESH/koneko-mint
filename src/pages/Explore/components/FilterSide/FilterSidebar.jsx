@@ -16,6 +16,7 @@ const categories = [
   },
 ];
 
+
 const FilterSidebar = () => {
   return (
     <aside className="filter-sidebar">
